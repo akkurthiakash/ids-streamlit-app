@@ -1,6 +1,6 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL VERSION
-# Login • Results & Usage • All Visuals • PDF Report
+# IDS STREAMLIT DASHBOARD — FINAL COMPLETE PROJECT
+# Tables + Graphs + CSV + Image Download (Each Section)
 # =========================================================
 
 import streamlit as st
@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import hashlib
-import os
 from io import BytesIO
 
 from sklearn.model_selection import train_test_split
@@ -18,29 +17,22 @@ from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
-    f1_score, confusion_matrix, classification_report,
+    f1_score, confusion_matrix,
     roc_curve, precision_recall_curve
 )
 
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-
 # =========================================================
-# 🔐 LOGIN (CHANGE CREDENTIALS HERE)
+# 🔐 LOGIN
 # =========================================================
-def hash_password(p): 
+def hash_password(p):
     return hashlib.sha256(p.encode()).hexdigest()
 
-USERS = {
-    "akash": hash_password("ids@2025")   # 👈 change if needed
-}
+USERS = {"akash": hash_password("ids@2025")}
 
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
-def login_page():
+def login():
     st.markdown("<h2 style='text-align:center;'> IDS Dashboard Login</h2>", unsafe_allow_html=True)
     u = st.text_input("Username")
     p = st.text_input("Password", type="password")
@@ -52,58 +44,38 @@ def login_page():
         else:
             st.error("Invalid username or password")
 
-def logout():
-    st.session_state.clear()
-    st.rerun()
-
 if not st.session_state.auth:
-    login_page()
+    login()
     st.stop()
 
 # =========================================================
-# PAGE CONFIG & STYLE
+# PAGE STYLE
 # =========================================================
 st.set_page_config(page_title="IDS Dashboard", layout="wide")
 st.markdown("""
 <style>
 .stApp {background: linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:white;}
 .center-text {text-align:center;}
-.centered {display:flex; justify-content:center;}
 </style>
 """, unsafe_allow_html=True)
 
-st.sidebar.success(f"Logged in as: {st.session_state.user}")
-if st.sidebar.button("🚪 Logout"):
-    logout()
-
 # =========================================================
-# TITLE
+# TITLE + SIMPLE REPORT
 # =========================================================
 st.markdown("<h1 class='center-text'> Intrusion Detection System </h1>", unsafe_allow_html=True)
-st.markdown("<h3 class='center-text'>Machine Learning–Based Network Security</h3>", unsafe_allow_html=True)
 
-# =========================================================
-# 📌 RESULTS & USAGE (FRONT OF DASHBOARD)
-# =========================================================
-st.markdown("<h2 class='center-text'> Results and Usage of the Proposed IDS</h2>", unsafe_allow_html=True)
 st.markdown("""
-<div style="text-align:center; font-size:16px; line-height:1.8;">
-<b>Result:</b><br>
-XGBoost achieves higher accuracy and F1-score than Linear SVM, with fewer missed attacks,
-making it more reliable for intrusion detection.<br><br>
-
-<b>Usage:</b><br>
-The system analyzes network traffic features and classifies them as <b>Normal</b> or <b>Attack</b>.
-It can be used for real-time monitoring, alert generation, and offline analysis.<br><br>
-
-<b>Applications:</b><br>
-Enterprise security • Early attack detection • IDS research • SIEM / firewall integration
+<div style="text-align:center; font-size:15px; line-height:1.8; max-width:900px; margin:auto;">
+<b>Purpose:</b> Detect network attacks using machine learning.<br>
+<b>Outcome:</b> XGBoost outperforms SVM with higher accuracy and fewer missed attacks.<br>
+<b>Usage:</b> Helps administrators monitor traffic and detect intrusions early.
 </div>
 """, unsafe_allow_html=True)
+
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================================================
-# DATASET UPLOAD
+# DATA UPLOAD
 # =========================================================
 uploaded = st.file_uploader("Upload IDS Dataset (CSV / XLSX)", ["csv","xlsx"])
 if uploaded is None:
@@ -117,21 +89,10 @@ X = df.drop(columns=[target])
 y = df[target].astype(int)
 
 # =========================================================
-# VISUAL 1 — CLASS DISTRIBUTION
-# =========================================================
-fig = plt.figure(figsize=(4,4))
-sns.countplot(x=y)
-plt.xlabel("Class (0 = Normal, 1 = Attack)")
-plt.tight_layout()
-plt.savefig("class_distribution.png", dpi=200)
-st.pyplot(fig)
-plt.close()
-
-# =========================================================
-# TRAIN & MODELS
+# TRAIN MODELS
 # =========================================================
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.30, stratify=y, random_state=42
+    X, y, test_size=0.3, stratify=y, random_state=42
 )
 
 scaler = StandardScaler()
@@ -141,148 +102,266 @@ X_test_svm = scaler.transform(X_test)
 svm = SVC(kernel="linear", probability=True, class_weight="balanced")
 xgb = XGBClassifier(
     n_estimators=300, max_depth=6, learning_rate=0.1,
-    subsample=0.9, colsample_bytree=0.9,
-    eval_metric="logloss"
+    subsample=0.9, colsample_bytree=0.9, eval_metric="logloss"
 )
 
 svm.fit(X_train_svm, y_train)
 xgb.fit(X_train, y_train)
 
+y_pred_svm = svm.predict(X_test_svm)
 y_pred_xgb = xgb.predict(X_test)
 y_prob_xgb = xgb.predict_proba(X_test)[:,1]
 
-# =========================================================
-# CONFUSION MATRIX
-# =========================================================
-fig = plt.figure(figsize=(4,4))
-sns.heatmap(confusion_matrix(y_test,y_pred_xgb), annot=True, fmt="d", cmap="Greens")
-plt.tight_layout()
-plt.savefig("confusion_matrix.png", dpi=200)
-st.pyplot(fig)
-plt.close()
+acc_svm = accuracy_score(y_test, y_pred_svm)
+acc_xgb = accuracy_score(y_test, y_pred_xgb)
 
 # =========================================================
-# ROC & PR CURVES
+# HELPER: SAVE FIG TO BUFFER
 # =========================================================
-fpr, tpr, _ = roc_curve(y_test, y_prob_xgb)
-precision, recall, _ = precision_recall_curve(y_test, y_prob_xgb)
-
-fig = plt.figure(figsize=(8,4))
-plt.subplot(1,2,1); plt.plot(fpr,tpr); plt.title("ROC Curve")
-plt.subplot(1,2,2); plt.plot(recall,precision); plt.title("Precision–Recall Curve")
-plt.tight_layout()
-plt.savefig("roc_pr.png", dpi=200)
-st.pyplot(fig)
-plt.close()
-
-# =========================================================
-# FEATURE IMPORTANCE
-# =========================================================
-imp_df = pd.DataFrame({
-    "Feature": X.columns,
-    "Importance": xgb.feature_importances_
-}).sort_values("Importance", ascending=False)
-
-fig = plt.figure(figsize=(6,4))
-sns.barplot(data=imp_df.head(10), x="Importance", y="Feature")
-plt.tight_layout()
-plt.savefig("feature_importance.png", dpi=200)
-st.pyplot(fig)
-plt.close()
-
-# =========================================================
-# PAIR PLOT (SAFE SAMPLE)
-# =========================================================
-top_feats = imp_df.head(4)["Feature"].tolist()
-df_pair = df[top_feats + [target]].sample(n=min(3000,len(df)), random_state=42)
-pair = sns.pairplot(df_pair, hue=target, corner=True)
-pair.savefig("pairplot.png", dpi=200)
-st.pyplot(pair)
-plt.close()
-
-# =========================================================
-# 📄 PDF GENERATION
-# =========================================================
-def generate_pdf():
+def fig_to_png(fig):
     buf = BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=A4)
-    styles = getSampleStyleSheet()
-    elems = []
-
-    elems.append(Paragraph("Intrusion Detection System – Final Report", styles["Title"]))
-    elems.append(Spacer(1,12))
-
-    elems.append(Paragraph("Results & Usage", styles["Heading2"]))
-    elems.append(Paragraph(
-        "XGBoost outperforms Linear SVM with higher accuracy and lower false negatives, "
-        "making it suitable for real-world IDS deployment.", styles["Normal"]
-    ))
-
-    elems.append(Spacer(1,12))
-    elems.append(Paragraph("Visual Analysis", styles["Heading2"]))
-
-    for img in [
-        "class_distribution.png",
-        "confusion_matrix.png",
-        "roc_pr.png",
-        "feature_importance.png",
-        "pairplot.png"
-    ]:
-        if os.path.exists(img):
-            elems.append(Spacer(1,10))
-            elems.append(Image(img, width=5*inch, height=3*inch))
-
-    elems.append(Spacer(1,12))
-    elems.append(Paragraph("Future Scope", styles["Heading2"]))
-    elems.append(Paragraph(
-        "• Real-time packet capture<br/>"
-        "• Multi-class attack detection<br/>"
-        "• Deep learning–based IDS<br/>"
-        "• Automated alert & response<br/>"
-        "• Cloud & edge deployment",
-        styles["Normal"]
-    ))
-
-    elems.append(Spacer(1,12))
-    elems.append(Paragraph("Deployment Architecture", styles["Heading2"]))
-    elems.append(Paragraph(
-        "Traffic → Feature Extraction → XGBoost Model → "
-        "Prediction Engine → Dashboard / Alerts / SIEM",
-        styles["Normal"]
-    ))
-
-    doc.build(elems)
+    fig.savefig(buf, format="png", dpi=160, bbox_inches="tight")
     buf.seek(0)
     return buf
 
 # =========================================================
-# DOWNLOAD PDF
+# 🔟 VISUALIZATIONS (TABLE + GRAPH + CSV + IMAGE)
 # =========================================================
-st.markdown("<h3 class='center-text'>📥 Download Complete Project Report</h3>", unsafe_allow_html=True)
 
-st.download_button(
-    "⬇️ Download IDS Final Report (PDF)",
-    generate_pdf(),
-    file_name="IDS_Final_Report.pdf",
-    mime="application/pdf"
-)
+# 1️⃣ Class Distribution
+st.subheader("1️⃣ Class Distribution")
+
+class_df = y.value_counts().rename_axis("Class").reset_index(name="Count")
+st.dataframe(class_df)
+
+fig = plt.figure(figsize=(4,3))
+sns.countplot(x=y)
+plt.title("Normal vs Attack Distribution")
+plt.xlabel("Class (0 = Normal, 1 = Attack)")
+plt.ylabel("Count")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   class_df.to_csv(index=False),
+                   "class_distribution.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "class_distribution.png")
+plt.close()
+
+# 2️⃣ Model Performance
+st.subheader("2️⃣ Model Performance Summary")
+
+metrics_df = pd.DataFrame({
+    "Model":["SVM","XGBoost"],
+    "Accuracy":[acc_svm, acc_xgb],
+    "Precision":[precision_score(y_test,y_pred_svm), precision_score(y_test,y_pred_xgb)],
+    "Recall":[recall_score(y_test,y_pred_svm), recall_score(y_test,y_pred_xgb)],
+    "F1-Score":[f1_score(y_test,y_pred_svm), f1_score(y_test,y_pred_xgb)]
+}).round(4)
+
+st.dataframe(metrics_df)
+
+fig = plt.figure(figsize=(4,3))
+sns.barplot(x=metrics_df["Model"], y=metrics_df["Accuracy"])
+plt.title("Accuracy Comparison")
+plt.xlabel("Model")
+plt.ylabel("Accuracy")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   metrics_df.to_csv(index=False),
+                   "model_performance.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "accuracy_comparison.png")
+plt.close()
+
+# 3️⃣ Confusion Matrix
+st.subheader("3️⃣ Confusion Matrix")
+
+cm = confusion_matrix(y_test, y_pred_xgb)
+cm_df = pd.DataFrame(cm,
+                     index=["Actual Normal","Actual Attack"],
+                     columns=["Predicted Normal","Predicted Attack"])
+st.dataframe(cm_df)
+
+fig = plt.figure(figsize=(4,3))
+sns.heatmap(cm_df, annot=True, fmt="d", cmap="Greens")
+plt.title("Confusion Matrix (XGBoost)")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   cm_df.to_csv(),
+                   "confusion_matrix.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "confusion_matrix.png")
+plt.close()
+
+# 4️⃣ ROC Curve
+st.subheader("4️⃣ ROC Curve")
+
+fpr, tpr, _ = roc_curve(y_test, y_prob_xgb)
+roc_df = pd.DataFrame({"FPR":fpr,"TPR":tpr})
+st.dataframe(roc_df.head(10))
+
+fig = plt.figure(figsize=(4,3))
+plt.plot(fpr, tpr)
+plt.plot([0,1],[0,1],'--')
+plt.title("ROC Curve")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   roc_df.to_csv(index=False),
+                   "roc_curve.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "roc_curve.png")
+plt.close()
+
+# 5️⃣ Precision–Recall Curve
+st.subheader("5️⃣ Precision–Recall Curve")
+
+precision, recall, _ = precision_recall_curve(y_test, y_prob_xgb)
+pr_df = pd.DataFrame({"Recall":recall,"Precision":precision})
+st.dataframe(pr_df.head(10))
+
+fig = plt.figure(figsize=(4,3))
+plt.plot(recall, precision)
+plt.title("Precision–Recall Curve")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   pr_df.to_csv(index=False),
+                   "precision_recall.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "precision_recall.png")
+plt.close()
+
+# 6️⃣ Prediction Confidence
+st.subheader("6️⃣ Prediction Confidence")
+
+conf_df = pd.DataFrame({"Attack Probability":y_prob_xgb})
+st.dataframe(conf_df.head(10))
+
+fig = plt.figure(figsize=(4,3))
+plt.hist(y_prob_xgb, bins=25)
+plt.title("Attack Probability Distribution")
+plt.xlabel("Attack Probability")
+plt.ylabel("Frequency")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   conf_df.to_csv(index=False),
+                   "prediction_confidence.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "prediction_confidence.png")
+plt.close()
+
+# 7️⃣ Error Breakdown
+st.subheader("7️⃣ Error Breakdown")
+
+error_df = pd.DataFrame({
+    "Type":["TN","FP","FN","TP"],
+    "Count":[cm[0,0],cm[0,1],cm[1,0],cm[1,1]]
+})
+st.dataframe(error_df)
+
+fig = plt.figure(figsize=(4,3))
+sns.barplot(data=error_df, x="Type", y="Count")
+plt.title("Prediction Errors")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   error_df.to_csv(index=False),
+                   "error_breakdown.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "error_breakdown.png")
+plt.close()
+
+# 8️⃣ Feature Importance
+st.subheader("8️⃣ Feature Importance")
+
+imp_df = pd.DataFrame({
+    "Feature":X.columns,
+    "Importance":xgb.feature_importances_
+}).sort_values("Importance",ascending=False)
+st.dataframe(imp_df.head(8))
+
+fig = plt.figure(figsize=(5,3))
+sns.barplot(data=imp_df.head(8), x="Importance", y="Feature")
+plt.title("Top Important Features")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   imp_df.to_csv(index=False),
+                   "feature_importance.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "feature_importance.png")
+plt.close()
+
+# 9️⃣ Feature vs Class
+st.subheader("9️⃣ Feature vs Class")
+
+top_feat = imp_df.iloc[0]["Feature"]
+feat_df = df.groupby(target)[top_feat].describe().reset_index()
+st.dataframe(feat_df)
+
+fig = plt.figure(figsize=(4,3))
+sns.boxplot(x=y, y=df[top_feat])
+plt.title(f"{top_feat} by Class")
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   feat_df.to_csv(index=False),
+                   "feature_vs_class.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "feature_vs_class.png")
+plt.close()
+
+# 🔟 Feature Interaction
+st.subheader("🔟 Feature Interaction")
+
+f1, f2 = imp_df.iloc[0]["Feature"], imp_df.iloc[1]["Feature"]
+inter_df = df[[f1,f2,target]].sample(n=min(4000,len(df)),random_state=42)
+st.dataframe(inter_df.head(10))
+
+fig = plt.figure(figsize=(4,3))
+sns.scatterplot(x=inter_df[f1], y=inter_df[f2], hue=inter_df[target], alpha=0.6)
+plt.title("Feature Interaction")
+plt.xlabel(f1)
+plt.ylabel(f2)
+st.pyplot(fig)
+
+st.download_button("⬇️ Download CSV",
+                   inter_df.to_csv(index=False),
+                   "feature_interaction.csv")
+
+st.download_button("⬇️ Download Image",
+                   fig_to_png(fig),
+                   "feature_interaction.png")
+plt.close()
 
 # =========================================================
-# REAL-TIME PREDICTION
+# END
 # =========================================================
-st.sidebar.header("🧪 Real-Time Prediction")
-
-user_input = {}
-for col in X.columns[:8]:
-    user_input[col] = st.sidebar.slider(
-        col, float(X[col].min()), float(X[col].max()), float(X[col].mean())
-    )
-
-if st.sidebar.button("Predict"):
-    inp = pd.DataFrame([user_input])
-    pred = xgb.predict(inp)[0]
-    prob = xgb.predict_proba(inp)[0][1]
-    st.sidebar.success("ATTACK 🚨" if pred else "NORMAL ✅")
-    st.sidebar.info(f"Attack Probability: {prob:.2%}")
-
-st.markdown("<h4 class='center-text'>✅ IDS Dashboard Ready</h4>", unsafe_allow_html=True)
+st.markdown("<h4 class='center-text'>✅ Full IDS Project Dashboard Ready</h4>", unsafe_allow_html=True)
