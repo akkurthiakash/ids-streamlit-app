@@ -1,6 +1,6 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL CENTER-ALIGNED VERSION
-# Login + Reports + Pair Plots + Prediction
+# IDS STREAMLIT DASHBOARD — FULL FINAL VERSION
+# FIXED LOGIN • REPORTS • VISUALS • PAIR PLOTS • PREDICTION
 # =========================================================
 
 import streamlit as st
@@ -20,36 +20,43 @@ from sklearn.metrics import (
 )
 
 # =========================================================
-# 🔐 LOGIN SYSTEM
+# 🔐 LOGIN SYSTEM (FIXED & STABLE)
 # =========================================================
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
+
 USERS = {
-    "admin": hashlib.sha256("Akash123".encode()).hexdigest(),
-    "user": hashlib.sha256("Akash123".encode()).hexdigest()
+    "admin": hash_password("admin123"),
+    "user": hash_password("user123")
 }
 
-def login():
+# Initialize session state
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+def login_page():
     st.markdown("<h2 style='text-align:center;'>🔐 IDS Dashboard Login</h2>", unsafe_allow_html=True)
+
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if username in USERS and hashlib.sha256(password.encode()).hexdigest() == USERS[username]:
-            st.session_state["auth"] = True
-            st.session_state["user"] = username
-            st.success("Login successful")
+        if username in USERS and hash_password(password) == USERS[username]:
+            st.session_state.authenticated = True
+            st.session_state.username = username
+            st.success("✅ Login successful")
             st.rerun()
         else:
-            st.error("Invalid username or password")
+            st.error("❌ Invalid username or password")
 
 def logout():
     st.session_state.clear()
     st.rerun()
 
-if "auth" not in st.session_state:
-    st.session_state["auth"] = False
-
-if not st.session_state["auth"]:
-    login()
+if not st.session_state.authenticated:
+    login_page()
     st.stop()
 
 # =========================================================
@@ -63,47 +70,31 @@ st.markdown("""
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color: white;
 }
-.center-text {
-    text-align: center;
-}
-.centered {
-    display: flex;
-    justify-content: center;
-}
+.center-text { text-align: center; }
+.centered { display: flex; justify-content: center; }
 </style>
 """, unsafe_allow_html=True)
 
-st.sidebar.success(f"Logged in as: {st.session_state['user']}")
+st.sidebar.success(f"Logged in as: {st.session_state.username}")
 if st.sidebar.button("🚪 Logout"):
     logout()
 
 # =========================================================
-# 🔷 CENTER-ALIGNED TITLE & INTRO TEXT
+# TITLE (CENTERED)
 # =========================================================
+st.markdown("<h1 class='center-text'>🛡️ Intrusion Detection System </h1>", unsafe_allow_html=True)
+st.markdown("<h3 class='center-text'>Linear SVM vs XGBoost</h3>", unsafe_allow_html=True)
 st.markdown(
-    "<h1 class='center-text'>🛡️ Intrusion Detection System </h1>",
+    "<p class='center-text'>Machine Learning–based Intrusion Detection with reports, "
+    "advanced visualizations, and real-time prediction.</p>",
     unsafe_allow_html=True
 )
-
-st.markdown(
-    "<h3 class='center-text'>Linear SVM vs XGBoost</h3>",
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    "<p class='center-text'>"
-    "This dashboard performs intrusion detection using machine learning models, "
-    "visualizes attack behavior, compares model performance, and supports real-time prediction."
-    "</p>",
-    unsafe_allow_html=True
-)
-
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================================================
 # FILE UPLOAD
 # =========================================================
-st.markdown("<h3 class='center-text'>📂 Upload Dataset</h3>", unsafe_allow_html=True)
+st.markdown("<h3 class='center-text'>📂 Upload IDS Dataset</h3>", unsafe_allow_html=True)
 
 uploaded = st.file_uploader("Upload IDS Dataset (CSV / XLSX)", ["csv", "xlsx"])
 if uploaded is None:
@@ -113,12 +104,12 @@ df = pd.read_excel(uploaded) if uploaded.name.endswith("xlsx") else pd.read_csv(
 df = df.dropna().drop_duplicates()
 
 st.markdown(
-    f"<p class='center-text'>Dataset Loaded: <b>{df.shape[0]}</b> rows × <b>{df.shape[1]}</b> columns</p>",
+    f"<p class='center-text'><b>Dataset Loaded:</b> {df.shape[0]} rows × {df.shape[1]} columns</p>",
     unsafe_allow_html=True
 )
 
 # =========================================================
-# DATA PREP
+# DATA PREPARATION
 # =========================================================
 target = df.columns[-1]
 X = df.drop(columns=[target])
@@ -153,7 +144,7 @@ y_pred_svm = svm.predict(X_test_svm)
 y_pred_xgb = xgb.predict(X_test)
 
 # =========================================================
-# METRICS (CENTERED TITLE)
+# METRICS SUMMARY
 # =========================================================
 st.markdown("<h3 class='center-text'>📊 Model Performance Summary</h3>", unsafe_allow_html=True)
 
@@ -170,7 +161,7 @@ st.dataframe(metrics_df, use_container_width=False)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
-# REPORTS (CENTERED TEXT)
+# CLASSIFICATION REPORTS
 # =========================================================
 st.markdown("<h3 class='center-text'>📄 Classification Reports</h3>", unsafe_allow_html=True)
 
@@ -185,7 +176,21 @@ c2.markdown("<h4 class='center-text'>XGBoost Report</h4>", unsafe_allow_html=Tru
 c2.dataframe(rep_xgb)
 
 # =========================================================
-# PAIR PLOT
+# CONFUSION MATRICES
+# =========================================================
+st.markdown("<h3 class='center-text'>🧩 Confusion Matrices</h3>", unsafe_allow_html=True)
+
+fig, ax = plt.subplots(1,2, figsize=(12,4))
+sns.heatmap(confusion_matrix(y_test,y_pred_svm), annot=True, fmt="d", cmap="Blues", ax=ax[0])
+ax[0].set_title("SVM")
+
+sns.heatmap(confusion_matrix(y_test,y_pred_xgb), annot=True, fmt="d", cmap="Greens", ax=ax[1])
+ax[1].set_title("XGBoost")
+
+st.pyplot(fig)
+
+# =========================================================
+# PAIR PLOT (SAFE)
 # =========================================================
 st.markdown("<h3 class='center-text'>🔗 Pair Plot (Top Features)</h3>", unsafe_allow_html=True)
 
@@ -195,7 +200,7 @@ imp_df = pd.DataFrame({
 }).sort_values("Importance", ascending=False)
 
 top_feats = imp_df["Feature"].head(4).tolist()
-df_pair = df[top_feats + [target]].sample(n=min(3000,len(df)), random_state=42)
+df_pair = df[top_feats + [target]].sample(n=min(3000, len(df)), random_state=42)
 
 fig = sns.pairplot(df_pair, hue=target, corner=True, plot_kws={"alpha":0.6})
 st.pyplot(fig)
@@ -226,8 +231,5 @@ if st.sidebar.button("🔍 Predict"):
 # =========================================================
 # END
 # =========================================================
-st.markdown(
-    "<h4 class='center-text'>✅ IDS Dashboard Loaded Successfully</h4>",
-    unsafe_allow_html=True
-)
+st.markdown("<h4 class='center-text'>✅ IDS Dashboard Loaded Successfully</h4>", unsafe_allow_html=True)
 
