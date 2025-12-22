@@ -1,6 +1,6 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL VERSION
-# Reports Shown in Dashboard | Centered | PDF Export
+# IDS STREAMLIT DASHBOARD — FINAL CENTER-ALIGNED VERSION
+# Login + Reports + Pair Plots + Prediction
 # =========================================================
 
 import streamlit as st
@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import hashlib
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -18,28 +19,52 @@ from sklearn.metrics import (
     f1_score, confusion_matrix, classification_report
 )
 
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
-from reportlab.lib.styles import getSampleStyleSheet
-from io import BytesIO
+# =========================================================
+# 🔐 LOGIN SYSTEM
+# =========================================================
+USERS = {
+    "admin": hashlib.sha256("Akash123".encode()).hexdigest(),
+    "user": hashlib.sha256("Akash123".encode()).hexdigest()
+}
 
-# ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="Intrusion Detection System", layout="wide")
+def login():
+    st.markdown("<h2 style='text-align:center;'>🔐 IDS Dashboard Login</h2>", unsafe_allow_html=True)
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
 
-# ---------------- STYLING ----------------
+    if st.button("Login"):
+        if username in USERS and hashlib.sha256(password.encode()).hexdigest() == USERS[username]:
+            st.session_state["auth"] = True
+            st.session_state["user"] = username
+            st.success("Login successful")
+            st.rerun()
+        else:
+            st.error("Invalid username or password")
+
+def logout():
+    st.session_state.clear()
+    st.rerun()
+
+if "auth" not in st.session_state:
+    st.session_state["auth"] = False
+
+if not st.session_state["auth"]:
+    login()
+    st.stop()
+
+# =========================================================
+# PAGE CONFIG & STYLE
+# =========================================================
+st.set_page_config(page_title="IDS Dashboard", layout="wide")
+
 st.markdown("""
 <style>
 .stApp {
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color: white;
 }
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg,#141e30,#243b55);
-}
-div[data-testid="metric-container"] {
-    background: rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 16px;
+.center-text {
+    text-align: center;
 }
 .centered {
     display: flex;
@@ -48,11 +73,38 @@ div[data-testid="metric-container"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- TITLE ----------------
-st.title("🛡️ Intrusion Detection System Dashboard")
-st.caption("Linear SVM vs XGBoost — Full Reports Shown")
+st.sidebar.success(f"Logged in as: {st.session_state['user']}")
+if st.sidebar.button("🚪 Logout"):
+    logout()
 
-# ---------------- FILE UPLOAD ----------------
+# =========================================================
+# 🔷 CENTER-ALIGNED TITLE & INTRO TEXT
+# =========================================================
+st.markdown(
+    "<h1 class='center-text'>🛡️ Intrusion Detection System </h1>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<h3 class='center-text'>Linear SVM vs XGBoost</h3>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<p class='center-text'>"
+    "This dashboard performs intrusion detection using machine learning models, "
+    "visualizes attack behavior, compares model performance, and supports real-time prediction."
+    "</p>",
+    unsafe_allow_html=True
+)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# =========================================================
+# FILE UPLOAD
+# =========================================================
+st.markdown("<h3 class='center-text'>📂 Upload Dataset</h3>", unsafe_allow_html=True)
+
 uploaded = st.file_uploader("Upload IDS Dataset (CSV / XLSX)", ["csv", "xlsx"])
 if uploaded is None:
     st.stop()
@@ -60,24 +112,29 @@ if uploaded is None:
 df = pd.read_excel(uploaded) if uploaded.name.endswith("xlsx") else pd.read_csv(uploaded)
 df = df.dropna().drop_duplicates()
 
-st.success(f"Dataset Loaded: {df.shape[0]} rows × {df.shape[1]} columns")
+st.markdown(
+    f"<p class='center-text'>Dataset Loaded: <b>{df.shape[0]}</b> rows × <b>{df.shape[1]}</b> columns</p>",
+    unsafe_allow_html=True
+)
 
-# ---------------- FEATURES ----------------
+# =========================================================
+# DATA PREP
+# =========================================================
 target = df.columns[-1]
 X = df.drop(columns=[target])
 y = df[target].astype(int)
 
-# ---------------- TRAIN TEST SPLIT ----------------
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.30, stratify=y, random_state=42
 )
 
-# ---------------- SCALING (SVM) ----------------
 scaler = StandardScaler()
 X_train_svm = scaler.fit_transform(X_train)
 X_test_svm = scaler.transform(X_test)
 
-# ---------------- MODELS ----------------
+# =========================================================
+# MODELS
+# =========================================================
 svm = SVC(kernel="linear", probability=True, class_weight="balanced", random_state=42)
 xgb = XGBClassifier(
     n_estimators=300,
@@ -89,155 +146,88 @@ xgb = XGBClassifier(
     random_state=42
 )
 
-# ---------------- TRAIN ----------------
 svm.fit(X_train_svm, y_train)
 xgb.fit(X_train, y_train)
 
-# ---------------- PREDICT ----------------
 y_pred_svm = svm.predict(X_test_svm)
 y_pred_xgb = xgb.predict(X_test)
 
-# ---------------- METRICS ----------------
-acc_svm = accuracy_score(y_test, y_pred_svm)
-acc_xgb = accuracy_score(y_test, y_pred_xgb)
-
-prec_svm = precision_score(y_test, y_pred_svm)
-rec_svm = recall_score(y_test, y_pred_svm)
-f1_svm = f1_score(y_test, y_pred_svm)
-
-prec_xgb = precision_score(y_test, y_pred_xgb)
-rec_xgb = recall_score(y_test, y_pred_xgb)
-f1_xgb = f1_score(y_test, y_pred_xgb)
+# =========================================================
+# METRICS (CENTERED TITLE)
+# =========================================================
+st.markdown("<h3 class='center-text'>📊 Model Performance Summary</h3>", unsafe_allow_html=True)
 
 metrics_df = pd.DataFrame({
     "Model": ["SVM", "XGBoost"],
-    "Accuracy": [acc_svm, acc_xgb],
-    "Precision": [prec_svm, prec_xgb],
-    "Recall": [rec_svm, rec_xgb],
-    "F1-Score": [f1_svm, f1_xgb]
+    "Accuracy": [accuracy_score(y_test,y_pred_svm), accuracy_score(y_test,y_pred_xgb)],
+    "Precision": [precision_score(y_test,y_pred_svm), precision_score(y_test,y_pred_xgb)],
+    "Recall": [recall_score(y_test,y_pred_svm), recall_score(y_test,y_pred_xgb)],
+    "F1-Score": [f1_score(y_test,y_pred_svm), f1_score(y_test,y_pred_xgb)]
 }).round(4)
 
-# =========================================================
-# 📊 METRICS SUMMARY (CENTERED)
-# =========================================================
-st.subheader("📊 Model Performance Summary")
 st.markdown('<div class="centered">', unsafe_allow_html=True)
 st.dataframe(metrics_df, use_container_width=False)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
-# 📄 CLASSIFICATION REPORTS (SHOWN IN DASHBOARD)
+# REPORTS (CENTERED TEXT)
 # =========================================================
-st.subheader("📄 Model Evaluation Reports")
+st.markdown("<h3 class='center-text'>📄 Classification Reports</h3>", unsafe_allow_html=True)
 
-rep_svm = pd.DataFrame(
-    classification_report(y_test, y_pred_svm, output_dict=True)
-).T.round(4)
-
-rep_xgb = pd.DataFrame(
-    classification_report(y_test, y_pred_xgb, output_dict=True)
-).T.round(4)
+rep_svm = pd.DataFrame(classification_report(y_test,y_pred_svm,output_dict=True)).T.round(4)
+rep_xgb = pd.DataFrame(classification_report(y_test,y_pred_xgb,output_dict=True)).T.round(4)
 
 c1, c2 = st.columns(2)
+c1.markdown("<h4 class='center-text'>SVM Report</h4>", unsafe_allow_html=True)
+c1.dataframe(rep_svm)
 
-with c1:
-    st.markdown("### 🔹 SVM Classification Report")
-    st.dataframe(rep_svm, use_container_width=True)
-
-with c2:
-    st.markdown("### 🔹 XGBoost Classification Report")
-    st.dataframe(rep_xgb, use_container_width=True)
+c2.markdown("<h4 class='center-text'>XGBoost Report</h4>", unsafe_allow_html=True)
+c2.dataframe(rep_xgb)
 
 # =========================================================
-# 🧩 CONFUSION MATRIX REPORT
+# PAIR PLOT
 # =========================================================
-st.subheader("🧩 Confusion Matrix Report")
+st.markdown("<h3 class='center-text'>🔗 Pair Plot (Top Features)</h3>", unsafe_allow_html=True)
 
-cm_svm = confusion_matrix(y_test, y_pred_svm)
-cm_xgb = confusion_matrix(y_test, y_pred_xgb)
+imp_df = pd.DataFrame({
+    "Feature": X.columns,
+    "Importance": xgb.feature_importances_
+}).sort_values("Importance", ascending=False)
 
-fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+top_feats = imp_df["Feature"].head(4).tolist()
+df_pair = df[top_feats + [target]].sample(n=min(3000,len(df)), random_state=42)
 
-sns.heatmap(cm_svm, annot=True, fmt="d", cmap="Blues", ax=ax[0])
-ax[0].set_title("SVM Confusion Matrix")
-ax[0].set_xlabel("Predicted")
-ax[0].set_ylabel("Actual")
-
-sns.heatmap(cm_xgb, annot=True, fmt="d", cmap="Greens", ax=ax[1])
-ax[1].set_title("XGBoost Confusion Matrix")
-ax[1].set_xlabel("Predicted")
-ax[1].set_ylabel("Actual")
-
+fig = sns.pairplot(df_pair, hue=target, corner=True, plot_kws={"alpha":0.6})
 st.pyplot(fig)
 
 # =========================================================
-# 📝 TEXT REPORT SUMMARY
+# REAL-TIME PREDICTION
 # =========================================================
-st.subheader("📝 Report Summary")
+st.sidebar.header("🧪 Real-Time Prediction")
 
-st.markdown(f"""
-**SVM Model**
-- Accuracy: `{acc_svm:.4f}`
-- Precision: `{prec_svm:.4f}`
-- Recall: `{rec_svm:.4f}`
-- F1-Score: `{f1_svm:.4f}`
+user_input = {}
+for col in X.columns[:8]:
+    user_input[col] = st.sidebar.slider(
+        col,
+        float(X[col].min()),
+        float(X[col].max()),
+        float(X[col].mean())
+    )
 
-**XGBoost Model**
-- Accuracy: `{acc_xgb:.4f}`
-- Precision: `{prec_xgb:.4f}`
-- Recall: `{rec_xgb:.4f}`
-- F1-Score: `{f1_xgb:.4f}`
-""")
+input_df = pd.DataFrame([user_input])
 
-# =========================================================
-# 📄 PDF REPORT
-# =========================================================
-def generate_pdf(metrics_df, svm_report, xgb_report):
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
-    styles = getSampleStyleSheet()
-    elements = []
+if st.sidebar.button("🔍 Predict"):
+    pred = xgb.predict(input_df)[0]
+    prob = xgb.predict_proba(input_df)[0][1]
 
-    elements.append(Paragraph("Intrusion Detection System Report", styles["Title"]))
-    elements.append(Spacer(1, 12))
-
-    elements.append(Paragraph("Model Performance Summary", styles["Heading2"]))
-    elements.append(Table([metrics_df.columns.tolist()] + metrics_df.values.tolist()))
-    elements.append(Spacer(1, 12))
-
-    elements.append(Paragraph("SVM Classification Report", styles["Heading2"]))
-    elements.append(Table([svm_report.reset_index().columns.tolist()] +
-                          svm_report.reset_index().values.tolist()))
-    elements.append(Spacer(1, 12))
-
-    elements.append(Paragraph("XGBoost Classification Report", styles["Heading2"]))
-    elements.append(Table([xgb_report.reset_index().columns.tolist()] +
-                          xgb_report.reset_index().values.tolist()))
-
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer
+    st.sidebar.success("ATTACK 🚨" if pred==1 else "NORMAL ✅")
+    st.sidebar.info(f"Attack Probability: {prob:.2%}")
 
 # =========================================================
-# 📥 DOWNLOAD SECTION
+# END
 # =========================================================
-st.subheader("📥 Download Reports")
-
-pdf_file = generate_pdf(metrics_df, rep_svm, rep_xgb)
-
-st.download_button(
-    "⬇️ Download Full Report (PDF)",
-    pdf_file,
-    "IDS_Report.pdf",
-    "application/pdf"
+st.markdown(
+    "<h4 class='center-text'>✅ IDS Dashboard Loaded Successfully</h4>",
+    unsafe_allow_html=True
 )
 
-st.download_button(
-    "⬇️ Download Metrics (CSV)",
-    metrics_df.to_csv(index=False),
-    "metrics.csv",
-    "text/csv"
-)
-
-# ---------------- END ----------------
-st.success("✅ IDS Dashboard Complete — Reports Displayed Successfully")
