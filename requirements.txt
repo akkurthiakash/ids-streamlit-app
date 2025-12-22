@@ -5,5 +5,3 @@ scikit-learn
 xgboost
 matplotlib
 seaborn
-reportlab
-
