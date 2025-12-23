@@ -38,8 +38,8 @@ st.markdown("<h1 style='text-align:center;'> Intrusion Detection System</h1>", u
 st.markdown("""
 <div style="text-align:center; font-size:15px; max-width:900px; margin:auto; line-height:1.8;">
 <b>Purpose:</b> Detect malicious network traffic using machine learning.<br>
-<b>Models Used:</b> Linear SVM and XGBoost.<br>
-<b>Key Result:</b> XGBoost provides better accuracy and fewer missed attacks.<br>
+<b>Models Used:</b>  SVM and XGBoost.<br>
+<b>Key Result:</b> XGBoost provides better accuracy than SVM <br>
 <b>Outcome:</b> Improved intrusion detection and network security.
 </div>
 """, unsafe_allow_html=True)
@@ -335,3 +335,4 @@ st.download_button(
     file_name="IDS_Final_Project_Report.pdf",
     mime="application/pdf"
 )
+
