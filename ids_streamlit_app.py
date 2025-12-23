@@ -43,10 +43,10 @@ thead tr th, tbody tr td {
 # =========================================================
 st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 
-st.markdown("## 📌 Project Outcomes")
+st.markdown("##  Project Outcomes")
 st.markdown("""
 - Detects **Normal** and **Attack** traffic effectively  
-- **XGBoost achieves higher accuracy** than Linear SVM  
+- **XGBoost achieves higher accuracy** than SVM model  
 - Reduces missed attacks  
 - Tables and compact graphs improve analysis clarity  
 """)
@@ -304,4 +304,5 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Dashboard Ready & Streamlit-Safe</h4>", unsafe_allow_html=True)
+
 
