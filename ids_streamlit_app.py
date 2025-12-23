@@ -1,6 +1,6 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL FIXED VERSION
-# Compact Graphs + Tables + Accuracy + PDF
+# IDS STREAMLIT DASHBOARD — FINAL STRICT VERSION
+# Tables FIRST, Images BELOW, Perfect Table Sizes (11 visuals)
 # =========================================================
 
 import streamlit as st
@@ -9,207 +9,185 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from io import BytesIO
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, precision_recall_curve
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4
-from io import BytesIO
-
-# ---------------- HARD GRAPH SIZE LIMIT ----------------
-MAX_FIG_SIZE = (3.2, 2.2)
-plt.rcParams["figure.dpi"] = 100
-
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="IDS Dashboard", layout="wide")
 
-# ---------------- TITLE ----------------
-st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
+# ---------------- GRAPH SIZE ----------------
+MAX_FIG = (3.2, 2.3)
+plt.rcParams["figure.dpi"] = 100
+
+# ---------------- TABLE TEXT SIZE ----------------
+st.markdown("""
+<style>
+thead tr th, tbody tr td {
+    font-size: 14px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =========================================================
-# PROJECT OUTCOMES
+# TITLE & OUTCOMES
 # =========================================================
+st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 
 st.markdown("##  Project Outcomes")
 st.markdown("""
-- The Intrusion Detection System (IDS) successfully identifies **normal** and **attack** traffic.
-- **XGBoost outperforms  SVM** with better accuracy.
-- Missed attacks are reduced, improving network security.
-- Visualizations and tables make results easy to understand.
-- The dashboard enables effective intrusion analysis.
+- Successfully detects **Normal** and **Attack** network traffic  
+- **XGBoost outperforms SVM Model**  
+- Reduces missed attacks  
+- Clear tables and compact visualizations improve analysis  
 """)
 
-
-
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown("---")
 
 # =========================================================
-# DATA LOADING
+# DATA LOAD
 # =========================================================
-@st.cache_data
-def load_data(file):
-    if file.name.endswith(".xlsx"):
-        return pd.read_excel(file, engine="openpyxl").dropna().drop_duplicates()
-    return pd.read_csv(file).dropna().drop_duplicates()
-
 uploaded = st.file_uploader("Upload IDS Dataset (CSV / XLSX)", ["csv","xlsx"])
 if uploaded is None:
     st.stop()
 
-df = load_data(uploaded)
+df = pd.read_excel(uploaded) if uploaded.name.endswith("xlsx") else pd.read_csv(uploaded)
+df = df.dropna().drop_duplicates()
+
 target = df.columns[-1]
 X = df.drop(columns=[target])
 y = df[target].astype(int)
 
 # =========================================================
-# MODEL TRAINING
+# MODEL TRAIN
 # =========================================================
-@st.cache_resource
-def train_models(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, stratify=y, random_state=42
-    )
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, stratify=y, random_state=42
+)
 
-    scaler = StandardScaler()
-    X_train_svm = scaler.fit_transform(X_train)
-    X_test_svm = scaler.transform(X_test)
+scaler = StandardScaler()
+X_train_svm = scaler.fit_transform(X_train)
+X_test_svm = scaler.transform(X_test)
 
-    svm = SVC(kernel="linear", probability=True, class_weight="balanced")
-    xgb = XGBClassifier(n_estimators=150, max_depth=5, learning_rate=0.1,
-                        subsample=0.9, colsample_bytree=0.9,
-                        eval_metric="logloss")
+svm = SVC(kernel="linear", probability=True, class_weight="balanced")
+xgb = XGBClassifier(n_estimators=120, max_depth=5, eval_metric="logloss")
 
-    svm.fit(X_train_svm, y_train)
-    xgb.fit(X_train, y_train)
+svm.fit(X_train_svm, y_train)
+xgb.fit(X_train, y_train)
 
-    return svm, xgb, X_test, X_test_svm, y_test
-
-svm, xgb, X_test, X_test_svm, y_test = train_models(X, y)
-
-# =========================================================
-# METRICS
-# =========================================================
 y_pred_xgb = xgb.predict(X_test)
-y_prob_xgb = xgb.predict_proba(X_test)[:, 1]
+y_prob_xgb = xgb.predict_proba(X_test)[:,1]
 
 acc_svm = accuracy_score(y_test, svm.predict(X_test_svm))
 acc_xgb = accuracy_score(y_test, y_pred_xgb)
+
 cm = confusion_matrix(y_test, y_pred_xgb)
 
+df_vis = df.sample(min(2000, len(df)), random_state=42)
+
 # =========================================================
-# 🎯 ACCURACY TABLE (TOP)
+# 🎯 ACCURACY SUMMARY (TABLE ONLY)
 # =========================================================
-st.markdown("## 🎯 Model Accuracy Summary")
+st.markdown("## 🎯 Accuracy Summary")
 
 acc_df = pd.DataFrame({
     "Model": ["Linear SVM", "XGBoost"],
     "Accuracy (%)": [acc_svm*100, acc_xgb*100]
 }).round(2)
 
-st.dataframe(acc_df, use_container_width=True)
+st.dataframe(acc_df)
+st.markdown("---")
 
 # =========================================================
-# SAMPLE FOR FAST VISUALS
+# VISUALIZATIONS (11) — TABLE FIRST → IMAGE BELOW
 # =========================================================
-df_vis = df.sample(min(2000, len(df)), random_state=42)
-y_vis = df_vis[target]
-
-# =========================================================
-# 📊 VISUALIZATIONS (COMPACT)
-# =========================================================
-st.markdown("## 📊 Visual Analysis")
 
 # ---------- 1️⃣ Class Distribution ----------
 st.subheader("1️⃣ Class Distribution")
-col1, col2 = st.columns([1.3, 1])
+st.dataframe(y.value_counts().rename_axis("Class").reset_index(name="Count"))
 
-with col1:
-    st.dataframe(y.value_counts().rename_axis("Class").reset_index(name="Count"))
-
-with col2:
-    fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
-    sns.countplot(x=y_vis, ax=ax)
-    ax.set_title("Normal vs Attack")
-    st.pyplot(fig, use_container_width=False)
-    plt.close(fig)
+fig, ax = plt.subplots(figsize=MAX_FIG)
+sns.countplot(x=y, ax=ax)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 2️⃣ Accuracy Comparison ----------
 st.subheader("2️⃣ Accuracy Comparison")
-col1, col2 = st.columns([1.3, 1])
+st.dataframe(acc_df)
 
-with col1:
-    st.dataframe(acc_df)
-
-with col2:
-    fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
-    sns.barplot(x=acc_df["Model"], y=acc_df["Accuracy (%)"], ax=ax)
-    ax.set_title("Accuracy Comparison")
-    st.pyplot(fig, use_container_width=False)
-    plt.close(fig)
+fig, ax = plt.subplots(figsize=MAX_FIG)
+sns.barplot(x=acc_df["Model"], y=acc_df["Accuracy (%)"], ax=ax)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 3️⃣ Confusion Matrix ----------
 st.subheader("3️⃣ Confusion Matrix")
-col1, col2 = st.columns([1.3, 1])
+cm_df = pd.DataFrame(cm,
+    index=["Actual Normal","Actual Attack"],
+    columns=["Pred Normal","Pred Attack"]
+)
+st.dataframe(cm_df)
 
-with col1:
-    cm_df = pd.DataFrame(cm,
-        index=["Actual Normal","Actual Attack"],
-        columns=["Pred Normal","Pred Attack"]
-    )
-    st.dataframe(cm_df)
-
-with col2:
-    fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
-    sns.heatmap(cm_df, annot=True, fmt="d", cmap="Greens", ax=ax)
-    st.pyplot(fig, use_container_width=False)
-    plt.close(fig)
+fig, ax = plt.subplots(figsize=MAX_FIG)
+sns.heatmap(cm_df, annot=True, fmt="d", cmap="Greens", ax=ax)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 4️⃣ ROC Curve ----------
 st.subheader("4️⃣ ROC Curve")
 fpr, tpr, _ = roc_curve(y_test, y_prob_xgb)
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
-ax.plot(fpr, tpr)
-ax.plot([0,1],[0,1],'--')
-ax.set_title("ROC Curve")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+roc_table = pd.DataFrame({
+    "False Positive Rate": fpr,
+    "True Positive Rate": tpr
+}).iloc[::max(1, len(fpr)//8)]
+
+st.dataframe(roc_table.reset_index(drop=True))
+
+fig, ax = plt.subplots(figsize=MAX_FIG)
+ax.plot(fpr, tpr); ax.plot([0,1],[0,1],'--')
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 5️⃣ Precision–Recall ----------
 st.subheader("5️⃣ Precision–Recall Curve")
 precision, recall, _ = precision_recall_curve(y_test, y_prob_xgb)
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
+pr_table = pd.DataFrame({
+    "Recall": recall,
+    "Precision": precision
+}).iloc[::max(1, len(recall)//8)]
+
+st.dataframe(pr_table.reset_index(drop=True))
+
+fig, ax = plt.subplots(figsize=MAX_FIG)
 ax.plot(recall, precision)
-ax.set_title("Precision–Recall")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 6️⃣ Prediction Confidence ----------
 st.subheader("6️⃣ Prediction Confidence")
+st.dataframe(pd.DataFrame({
+    "Attack Probability": y_prob_xgb[:8]
+}))
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
+fig, ax = plt.subplots(figsize=MAX_FIG)
 ax.hist(y_prob_xgb, bins=20)
-ax.set_title("Attack Probability")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 7️⃣ Error Breakdown ----------
 st.subheader("7️⃣ Error Breakdown")
 error_df = pd.DataFrame({
-    "Type":["TN","FP","FN","TP"],
-    "Count":[cm[0,0],cm[0,1],cm[1,0],cm[1,1]]
+    "Type": ["TN","FP","FN","TP"],
+    "Count": [cm[0,0], cm[0,1], cm[1,0], cm[1,1]]
 })
+st.dataframe(error_df)
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
+fig, ax = plt.subplots(figsize=MAX_FIG)
 sns.barplot(data=error_df, x="Type", y="Count", ax=ax)
-ax.set_title("Errors")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 8️⃣ Feature Importance ----------
 st.subheader("8️⃣ Feature Importance")
@@ -218,58 +196,135 @@ imp_df = pd.DataFrame({
     "Importance": xgb.feature_importances_
 }).sort_values("Importance", ascending=False).head(6)
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
+st.dataframe(imp_df)
+
+fig, ax = plt.subplots(figsize=MAX_FIG)
 sns.barplot(data=imp_df, x="Importance", y="Feature", ax=ax)
-ax.set_title("Top Features")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+st.pyplot(fig); plt.close(fig)
 
 # ---------- 9️⃣ Feature vs Class ----------
 st.subheader("9️⃣ Feature vs Class")
 top_feat = imp_df.iloc[0]["Feature"]
 
-fig, ax = plt.subplots(figsize=MAX_FIG_SIZE)
-sns.boxplot(x=y_vis, y=df_vis[top_feat], ax=ax)
-ax.set_title(f"{top_feat} vs Class")
-st.pyplot(fig, use_container_width=False)
-plt.close(fig)
+feat_table = df_vis.groupby(target)[top_feat].mean().reset_index()
+st.dataframe(feat_table)
 
-# ---------- 🔟 Pair Plot (Compact) ----------
-st.subheader("🔟 Pair Plot (Compact)")
-pair_cols = df_vis.columns[:4].tolist() + [target]
-sns.set_context("notebook", font_scale=0.55)
+fig, ax = plt.subplots(figsize=MAX_FIG)
+sns.boxplot(x=df_vis[target], y=df_vis[top_feat], ax=ax)
+st.pyplot(fig); plt.close(fig)
 
-pair_fig = sns.pairplot(df_vis[pair_cols], hue=target, corner=True,
-                         plot_kws={"s":6, "alpha":0.5})
-pair_fig.fig.set_size_inches(4.5, 4.5)
-st.pyplot(pair_fig.fig, use_container_width=False)
+# ---------- 🔟 Scatter Plot ----------
+st.subheader("🔟 Feature Scatter Plot")
+f1, f2 = X.columns[:2]
+
+scatter_table = df_vis[[f1, f2, target]].sample(8, random_state=1)
+st.dataframe(scatter_table)
+
+fig, ax = plt.subplots(figsize=MAX_FIG)
+sns.scatterplot(data=df_vis, x=f1, y=f2, hue=target, ax=ax)
+st.pyplot(fig); plt.close(fig)
+
+# ---------- 1️⃣1️⃣ Pair Plot ----------
+st.subheader("1️⃣1️⃣ Pair Plot Summary")
+
+pair_table = df_vis[[f1, f2, target]].groupby(target).mean().reset_index()
+st.dataframe(pair_table)
+
+pair_fig = sns.pairplot(
+    df_vis[[f1, f2, target]],
+    hue=target,
+    plot_kws={"s":6, "alpha":0.5}
+)
+pair_fig.fig.set_size_inches(4.5,4.5)
+st.pyplot(pair_fig.fig)
 plt.close("all")
 
-# =========================================================
-# 📄 PDF DOWNLOAD
-# =========================================================
-def generate_pdf():
+st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard (All Tables + Images Correct)</h4>", unsafe_allow_html=True)
+
+def generate_ids_report_pdf():
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
     elements = []
 
-    elements.append(Paragraph("IDS Final Report", styles["Title"]))
+    # ---------- TITLE ----------
+    elements.append(Paragraph("Intrusion Detection System – Final Report", styles["Title"]))
     elements.append(Spacer(1, 12))
-    elements.append(Paragraph("XGBoost outperforms Linear SVM with higher accuracy "
-                              "and better intrusion detection capability.",
-                              styles["Normal"]))
+
+    # ---------- PROJECT OUTCOMES ----------
+    elements.append(Paragraph("Project Outcomes", styles["Heading2"]))
+    elements.append(Paragraph(
+        "The IDS successfully classifies network traffic into Normal and Attack. "
+        "XGBoost outperforms Linear SVM, achieving higher accuracy and reducing missed attacks.",
+        styles["Normal"]
+    ))
+    elements.append(Spacer(1, 10))
+
+    # ---------- DATASET SUMMARY ----------
+    elements.append(Paragraph("Dataset Summary", styles["Heading2"]))
+    elements.append(Table([
+        ["Metric", "Value"],
+        ["Total Records", df.shape[0]],
+        ["Total Features", df.shape[1]],
+        ["Normal Traffic", int((y == 0).sum())],
+        ["Attack Traffic", int((y == 1).sum())]
+    ]))
+    elements.append(Spacer(1, 10))
+
+    # ---------- ACCURACY REPORT ----------
+    elements.append(Paragraph("Accuracy Report", styles["Heading2"]))
+    elements.append(Table([
+        ["Model", "Accuracy (%)"],
+        ["Linear SVM", f"{acc_svm*100:.2f}"],
+        ["XGBoost", f"{acc_xgb*100:.2f}"]
+    ]))
+    elements.append(Spacer(1, 10))
+
+    # ---------- CONFUSION MATRIX ----------
+    elements.append(Paragraph("Confusion Matrix (XGBoost)", styles["Heading2"]))
+    elements.append(Table([
+        ["", "Pred Normal", "Pred Attack"],
+        ["Actual Normal", cm[0,0], cm[0,1]],
+        ["Actual Attack", cm[1,0], cm[1,1]]
+    ]))
+    elements.append(Spacer(1, 10))
+
+    # ---------- VISUALIZATION SUMMARY ----------
+    elements.append(Paragraph("Visualization Summary (11)", styles["Heading2"]))
+    elements.append(Paragraph(
+        "1. Class Distribution<br/>"
+        "2. Accuracy Comparison<br/>"
+        "3. Confusion Matrix<br/>"
+        "4. ROC Curve<br/>"
+        "5. Precision–Recall Curve<br/>"
+        "6. Prediction Confidence<br/>"
+        "7. Error Breakdown<br/>"
+        "8. Feature Importance<br/>"
+        "9. Feature vs Class<br/>"
+        "10. Scatter Plot<br/>"
+        "11. Pair Plot",
+        styles["Normal"]
+    ))
+
+    # ---------- CONCLUSION ----------
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph("Conclusion", styles["Heading2"]))
+    elements.append(Paragraph(
+        "The project demonstrates that machine learning–based IDS, especially using XGBoost, "
+        "provides an effective and scalable solution for network intrusion detection.",
+        styles["Normal"]
+    ))
+
     doc.build(elements)
     buffer.seek(0)
     return buffer
 
-st.markdown("## 📄 Download Report")
-st.download_button("📥 Download IDS Report (PDF)",
-                   generate_pdf(),
-                   file_name="IDS_Report.pdf",
-                   mime="application/pdf")
+st.markdown("## 📄 Download Project Report")
 
-st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
-
-
+st.download_button(
+    label="📥 Download IDS Report (PDF)",
+    data=generate_ids_report_pdf(),
+    file_name="IDS_Final_Report.pdf",
+    mime="application/pdf"
+)
 
