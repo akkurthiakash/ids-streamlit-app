@@ -1,6 +1,5 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FAST & FINAL VERSION
-# Optimized for Speed | Tables + Graphs + Downloads
+# IDS STREAMLIT DASHBOARD — FINAL FULL VERSION (FAST)
 # =========================================================
 
 import streamlit as st
@@ -9,15 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import hashlib
-from io import BytesIO
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
-    f1_score, confusion_matrix,
+    accuracy_score, confusion_matrix,
     roc_curve, precision_recall_curve
 )
 
@@ -27,7 +24,7 @@ from sklearn.metrics import (
 st.set_page_config(page_title="IDS Dashboard", layout="wide")
 
 # =========================================================
-# 🔐 LOGIN (FAST)
+# 🔐 LOGIN
 # =========================================================
 def hash_password(p):
     return hashlib.sha256(p.encode()).hexdigest()
@@ -44,7 +41,6 @@ def login():
     if st.button("Login"):
         if u in USERS and hash_password(p) == USERS[u]:
             st.session_state.auth = True
-            st.session_state.user = u
             st.rerun()
         else:
             st.error("Invalid username or password")
@@ -64,27 +60,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# TITLE + SIMPLE REPORT
+# TITLE & REPORT
 # =========================================================
-st.markdown("<h1 class='center-text'>🛡️ Intrusion Detection System</h1>", unsafe_allow_html=True)
-
+st.markdown("<h1 class='center-text'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 st.markdown("""
-<div style="text-align:center; font-size:15px; max-width:900px; margin:auto;">
-<b>Purpose:</b> Detect cyber attacks using ML<br>
-<b>Outcome:</b> XGBoost outperforms SVM<br>
-<b>Usage:</b> Network traffic monitoring
+<div style="text-align:center; font-size:15px;">
+<b>Purpose:</b> Detect cyber attacks using machine learning<br>
+<b>Outcome:</b> XGBoost performs better than SVM<br>
+<b>Usage:</b> Network traffic monitoring & early attack detection
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================================================
-# 📂 DATA LOADING (CACHED)
+# DATA LOADING (FAST + SAFE)
 # =========================================================
 @st.cache_data
 def load_data(file):
-    df = pd.read_excel(file) if file.name.endswith("xlsx") else pd.read_csv(file)
-    return df.dropna().drop_duplicates()
+    if file.name.endswith(".xlsx"):
+        return pd.read_excel(file, engine="openpyxl").dropna().drop_duplicates()
+    return pd.read_csv(file).dropna().drop_duplicates()
 
 uploaded = st.file_uploader("Upload IDS Dataset (CSV / XLSX)", ["csv","xlsx"])
 if uploaded is None:
@@ -97,7 +93,7 @@ X = df.drop(columns=[target])
 y = df[target].astype(int)
 
 # =========================================================
-# 🤖 MODEL TRAINING (CACHED)
+# MODEL TRAINING (CACHED)
 # =========================================================
 @st.cache_resource
 def train_models(X, y):
@@ -111,7 +107,7 @@ def train_models(X, y):
 
     svm = SVC(kernel="linear", probability=True, class_weight="balanced")
     xgb = XGBClassifier(
-        n_estimators=150,        # ↓ reduced for speed
+        n_estimators=150,
         max_depth=5,
         learning_rate=0.1,
         subsample=0.9,
@@ -127,102 +123,123 @@ def train_models(X, y):
 svm, xgb, X_test, X_test_svm, y_test = train_models(X, y)
 
 y_pred_xgb = xgb.predict(X_test)
-y_prob_xgb = xgb.predict_proba(X_test)[:,1]
+y_prob_xgb = xgb.predict_proba(X_test)[:, 1]
+
+acc_svm = accuracy_score(y_test, svm.predict(X_test_svm))
+acc_xgb = accuracy_score(y_test, y_pred_xgb)
 
 # =========================================================
-# FAST SAMPLE FOR VISUALS (IMPORTANT)
+# FAST SAMPLE FOR VISUALS
 # =========================================================
 VIS_SAMPLE = min(3000, len(df))
 df_vis = df.sample(VIS_SAMPLE, random_state=42)
 y_vis = df_vis[target]
 
 # =========================================================
-# HELPER: SAVE FIG TO IMAGE BUFFER
+# 🔟 ALL 10 VISUALIZATIONS
 # =========================================================
-def fig_to_png(fig):
-    buf = BytesIO()
-    fig.savefig(buf, format="png", dpi=140, bbox_inches="tight")
-    buf.seek(0)
-    return buf
-
-# =========================================================
-# 🔟 FAST VISUALIZATIONS (OPTIMIZED)
-# =========================================================
+st.markdown("## 📊 Visual Analysis (All Required Visualizations)")
 
 # 1️⃣ Class Distribution
 st.subheader("1️⃣ Class Distribution")
-class_df = y.value_counts().reset_index()
-class_df.columns = ["Class","Count"]
-st.dataframe(class_df)
-
 fig = plt.figure(figsize=(4,3))
 sns.countplot(x=y_vis)
-plt.title("Normal vs Attack")
-st.pyplot(fig)
-st.download_button("CSV", class_df.to_csv(index=False), "class_distribution.csv")
-st.download_button("IMG", fig_to_png(fig), "class_distribution.png")
-plt.close()
+plt.title("Normal vs Attack Distribution")
+plt.xlabel("Class")
+plt.ylabel("Count")
+st.pyplot(fig); plt.close()
 
-# 2️⃣ Confusion Matrix
-st.subheader("2️⃣ Confusion Matrix")
-cm = confusion_matrix(y_test, y_pred_xgb)
-cm_df = pd.DataFrame(cm, index=["Actual Normal","Actual Attack"],
-                     columns=["Pred Normal","Pred Attack"])
-st.dataframe(cm_df)
-
+# 2️⃣ Accuracy Comparison
+st.subheader("2️⃣ Model Accuracy Comparison")
 fig = plt.figure(figsize=(4,3))
-sns.heatmap(cm_df, annot=True, fmt="d", cmap="Greens")
+sns.barplot(x=["SVM","XGBoost"], y=[acc_svm, acc_xgb])
+plt.title("Accuracy Comparison")
+plt.ylabel("Accuracy")
+st.pyplot(fig); plt.close()
+
+# 3️⃣ Confusion Matrix
+st.subheader("3️⃣ Confusion Matrix")
+cm = confusion_matrix(y_test, y_pred_xgb)
+fig = plt.figure(figsize=(4,3))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Greens")
 plt.title("Confusion Matrix")
-st.pyplot(fig)
-st.download_button("CSV", cm_df.to_csv(), "confusion_matrix.csv")
-st.download_button("IMG", fig_to_png(fig), "confusion_matrix.png")
-plt.close()
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+st.pyplot(fig); plt.close()
 
-# 3️⃣ ROC Curve
-st.subheader("3️⃣ ROC Curve")
+# 4️⃣ ROC Curve
+st.subheader("4️⃣ ROC Curve")
 fpr, tpr, _ = roc_curve(y_test, y_prob_xgb)
-roc_df = pd.DataFrame({"FPR":fpr,"TPR":tpr})
-st.dataframe(roc_df.head(10))
-
 fig = plt.figure(figsize=(4,3))
 plt.plot(fpr, tpr); plt.plot([0,1],[0,1],'--')
 plt.title("ROC Curve")
-st.pyplot(fig)
-st.download_button("CSV", roc_df.to_csv(index=False), "roc_curve.csv")
-st.download_button("IMG", fig_to_png(fig), "roc_curve.png")
-plt.close()
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+st.pyplot(fig); plt.close()
 
-# 4️⃣ Feature Importance
-st.subheader("4️⃣ Feature Importance")
+# 5️⃣ Precision–Recall Curve
+st.subheader("5️⃣ Precision–Recall Curve")
+precision, recall, _ = precision_recall_curve(y_test, y_prob_xgb)
+fig = plt.figure(figsize=(4,3))
+plt.plot(recall, precision)
+plt.title("Precision–Recall Curve")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+st.pyplot(fig); plt.close()
+
+# 6️⃣ Prediction Confidence
+st.subheader("6️⃣ Prediction Confidence Distribution")
+fig = plt.figure(figsize=(4,3))
+plt.hist(y_prob_xgb, bins=25)
+plt.title("Attack Probability Distribution")
+plt.xlabel("Attack Probability")
+plt.ylabel("Frequency")
+st.pyplot(fig); plt.close()
+
+# 7️⃣ Error Breakdown
+st.subheader("7️⃣ Error Breakdown")
+error_df = pd.DataFrame({
+    "Type":["TN","FP","FN","TP"],
+    "Count":[cm[0,0], cm[0,1], cm[1,0], cm[1,1]]
+})
+fig = plt.figure(figsize=(4,3))
+sns.barplot(data=error_df, x="Type", y="Count")
+plt.title("Prediction Error Breakdown")
+st.pyplot(fig); plt.close()
+
+# 8️⃣ Feature Importance
+st.subheader("8️⃣ Feature Importance")
 imp_df = pd.DataFrame({
-    "Feature":X.columns,
-    "Importance":xgb.feature_importances_
-}).sort_values("Importance",ascending=False).head(8)
-
-st.dataframe(imp_df)
+    "Feature": X.columns,
+    "Importance": xgb.feature_importances_
+}).sort_values("Importance", ascending=False).head(8)
 
 fig = plt.figure(figsize=(5,3))
 sns.barplot(data=imp_df, x="Importance", y="Feature")
-plt.title("Top Features")
-st.pyplot(fig)
-st.download_button("CSV", imp_df.to_csv(index=False), "feature_importance.csv")
-st.download_button("IMG", fig_to_png(fig), "feature_importance.png")
-plt.close()
+plt.title("Top Important Features")
+st.pyplot(fig); plt.close()
 
-# 5️⃣ Feature Interaction (FAST)
-st.subheader("5️⃣ Feature Interaction")
-f1, f2 = imp_df.iloc[0]["Feature"], imp_df.iloc[1]["Feature"]
-inter_df = df_vis[[f1,f2,target]]
-
-st.dataframe(inter_df.head(10))
-
+# 9️⃣ Feature vs Class
+st.subheader("9️⃣ Feature vs Class")
+top_feat = imp_df.iloc[0]["Feature"]
 fig = plt.figure(figsize=(4,3))
-sns.scatterplot(x=inter_df[f1], y=inter_df[f2],
-                hue=inter_df[target], alpha=0.5)
-plt.title("Feature Interaction")
-st.pyplot(fig)
-st.download_button("CSV", inter_df.to_csv(index=False), "feature_interaction.csv")
-st.download_button("IMG", fig_to_png(fig), "feature_interaction.png")
-plt.close()
+sns.boxplot(x=y_vis, y=df_vis[top_feat])
+plt.title(f"{top_feat} Distribution by Class")
+plt.xlabel("Class")
+plt.ylabel(top_feat)
+st.pyplot(fig); plt.close()
 
-st.markdown("<h4 class='center-text'>⚡ Fast IDS Dashboard Loaded</h4>", unsafe_allow_html=True)
+# 🔟 Feature Interaction
+st.subheader("🔟 Feature Interaction")
+f1, f2 = imp_df.iloc[0]["Feature"], imp_df.iloc[1]["Feature"]
+fig = plt.figure(figsize=(4,3))
+sns.scatterplot(x=df_vis[f1], y=df_vis[f2], hue=y_vis, alpha=0.6)
+plt.title("Feature Interaction Scatter Plot")
+plt.xlabel(f1)
+plt.ylabel(f2)
+st.pyplot(fig); plt.close()
+
+# =========================================================
+# END
+# =========================================================
+st.markdown("<h4 class='center-text'>✅ All 10 Visualizations Loaded Successfully</h4>", unsafe_allow_html=True)
