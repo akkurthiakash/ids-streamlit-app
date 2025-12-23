@@ -37,7 +37,7 @@ st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", 
 st.markdown("##  Project Outcomes")
 st.markdown("""
 - The Intrusion Detection System (IDS) successfully identifies **normal** and **attack** traffic.
-- **XGBoost outperforms Linear SVM** with better accuracy.
+- **XGBoost outperforms  SVM** with better accuracy.
 - Missed attacks are reduced, improving network security.
 - Visualizations and tables make results easy to understand.
 - The dashboard enables effective intrusion analysis.
@@ -270,5 +270,6 @@ st.download_button("📥 Download IDS Report (PDF)",
                    mime="application/pdf")
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
 
 
