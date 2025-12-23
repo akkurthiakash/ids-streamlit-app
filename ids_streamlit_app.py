@@ -41,7 +41,7 @@ thead tr th, tbody tr td {
 # =========================================================
 # TITLE & OUTCOMES
 # =========================================================
-st.markdown("<h1 style='text-align:center;'>🛡️ Intrusion Detection System Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 
 st.markdown("## 📌 Project Outcomes")
 st.markdown("""
@@ -304,3 +304,4 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Dashboard Ready & Streamlit-Safe</h4>", unsafe_allow_html=True)
+
