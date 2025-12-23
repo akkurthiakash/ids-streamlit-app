@@ -33,12 +33,12 @@ st.set_page_config(page_title="IDS Dashboard", layout="wide")
 # =========================================================
 # TITLE
 # =========================================================
-st.markdown("<h1 style='text-align:center;'>🛡️ Intrusion Detection System Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 
 # =========================================================
 # 📌 PROJECT OUTCOMES & RESULTS (MEDIUM REPORT)
 # =========================================================
-st.markdown("## 📌 Project Outcomes and Results")
+st.markdown("##  Project Outcomes and Results")
 
 st.markdown("""
 The Intrusion Detection System (IDS) developed in this project applies machine learning
@@ -119,7 +119,7 @@ acc_xgb = accuracy_score(y_test, y_pred_xgb)
 cm = confusion_matrix(y_test, y_pred_xgb)
 
 # =========================================================
-# 🎯 ACCURACY REPORT (TOP OF VISUALS)
+# ACCURACY REPORT (TOP OF VISUALS)
 # =========================================================
 st.markdown("## 🎯 Model Accuracy Summary")
 
@@ -334,4 +334,5 @@ st.download_button(
     file_name="IDS_Final_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
