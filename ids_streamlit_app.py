@@ -33,17 +33,17 @@ st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", 
 # =========================================================
 # PROJECT OUTCOMES
 # =========================================================
-st.markdown("## 📌 Project Outcomes and Results")
 
+st.markdown("##  Project Outcomes")
 st.markdown("""
-This project implements a **Machine Learning–based Intrusion Detection System (IDS)**
-to classify network traffic as **Normal** or **Attack**.
-
-Experimental results show that **XGBoost outperforms Linear SVM** by achieving higher
-accuracy and reducing missed attacks.
-The system improves reliability and strengthens
-network security by detecting malicious traffic more effectively.
+- The Intrusion Detection System (IDS) successfully identifies **normal** and **attack** traffic.
+- **XGBoost outperforms Linear SVM** with better accuracy.
+- Missed attacks are reduced, improving network security.
+- Visualizations and tables make results easy to understand.
+- The dashboard enables effective intrusion analysis.
 """)
+
+
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -270,4 +270,5 @@ st.download_button("📥 Download IDS Report (PDF)",
                    mime="application/pdf")
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
 
