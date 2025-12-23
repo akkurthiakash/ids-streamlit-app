@@ -40,7 +40,8 @@ This project implements a **Machine Learning–based Intrusion Detection System 
 to classify network traffic as **Normal** or **Attack**.
 
 Experimental results show that **XGBoost outperforms Linear SVM** by achieving higher
-accuracy and reducing missed attacks. The system improves reliability and strengthens
+accuracy and reducing missed attacks.
+The system improves reliability and strengthens
 network security by detecting malicious traffic more effectively.
 """)
 
@@ -269,3 +270,4 @@ st.download_button("📥 Download IDS Report (PDF)",
                    mime="application/pdf")
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
