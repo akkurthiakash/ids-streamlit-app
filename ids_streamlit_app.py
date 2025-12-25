@@ -1,5 +1,5 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL STREAMLIT-SAFE VERSION
+# IDS STREAMLIT DASHBOARD — FINAL MEDIUM-SIZE VERSION
 # =========================================================
 
 import streamlit as st
@@ -14,51 +14,54 @@ from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, precision_recall_curve
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4
-from io import BytesIO
-
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="IDS Dashboard", layout="wide")
 
-# ---------------- FORCE SMALL IMAGE SIZE ----------------
-MAX_FIG = (2.8, 2.0)
-plt.rcParams["figure.dpi"] = 100
+# ---------------- MEDIUM SIZE SETTINGS ----------------
+MAX_FIG = (4.5, 3.2)
+plt.rcParams["figure.dpi"] = 110
 
-# ---------------- LIMIT IMAGE WIDTH (CRITICAL) ----------------
+# ---------------- MEDIUM TABLE & IMAGE STYLE ----------------
 st.markdown("""
 <style>
-img, canvas {
-    max-width: 420px !important;
-}
 thead tr th, tbody tr td {
-    font-size: 14px !important;
+    font-size: 15px !important;
+    padding: 6px 10px !important;
+}
+[data-testid="stDataFrame"] {
+    width: 80% !important;
+    margin-bottom: 14px;
+}
+canvas, img {
+    max-width: 650px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# TITLE & BRIEF PROJECT DESCRIPTION
+# TITLE
 # =========================================================
-st.markdown("<h1 style='text-align:center;'> Intrusion Detection System</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'> Intrusion Detection System Dashboard</h1>", unsafe_allow_html=True)
 
+# =========================================================
+# PROJECT PREVIEW (REPORT FORMAT)
+# =========================================================
 st.markdown("##  Project Preview")
 
 st.markdown("""
-### Intrusion Detection System (IDS) – Project Overview
-
 **Aim:**  
-The aim of this project is to develop a machine learning–based Intrusion Detection System (IDS) that classifies network traffic as Normal or Attack.
+To build a machine learning–based Intrusion Detection System (IDS) that classifies
+network traffic as **Normal** or **Attack**.
 
 **Dataset:**  
 A network traffic dataset containing labeled records:
 - 0 – Normal traffic  
 - 1 – Attack traffic  
+
 The dataset is cleaned by removing missing values and duplicates.
 
 **Algorithms Used:**  
--  Support Vector Machine (SVM) – baseline model  
+- Linear Support Vector Machine (SVM) – baseline model  
 - XGBoost – advanced model with higher accuracy  
 
 **Purpose:**  
@@ -67,14 +70,16 @@ The dataset is cleaned by removing missing values and duplicates.
 - Analyze results using a dashboard  
 
 **Outcomes:**  
-- Accurate classification of network traffic  
+- Accurate classification of traffic  
 - XGBoost performs better than SVM  
 - Reduced missed attacks  
 
 **Usefulness in Data Science:**  
-Demonstrates data preprocessing, model evaluation, visualization, and real-world application of machine learning.
+Demonstrates data preprocessing, model evaluation, visualization,
+and real-world application of machine learning.
 """)
 
+st.markdown("---")
 
 # =========================================================
 # DATA LOADING
@@ -90,6 +95,7 @@ if uploaded is None:
     st.stop()
 
 df = load_data(uploaded)
+
 target = df.columns[-1]
 X = df.drop(columns=[target])
 y = df[target].astype(int)
@@ -108,6 +114,7 @@ def train_models(X, y):
     X_test_svm = scaler.transform(X_test)
 
     svm = SVC(kernel="linear", probability=True, class_weight="balanced")
+
     xgb = XGBClassifier(
         n_estimators=100,
         max_depth=4,
@@ -135,7 +142,7 @@ acc_svm = accuracy_score(y_test, svm.predict(X_test_svm))
 acc_xgb = accuracy_score(y_test, y_pred_xgb)
 cm = confusion_matrix(y_test, y_pred_xgb)
 
-df_vis = df.sample(min(1200, len(df)), random_state=42)
+df_vis = df.sample(min(1500, len(df)), random_state=42)
 
 # =========================================================
 # ACCURACY TABLE
@@ -148,17 +155,18 @@ acc_df = pd.DataFrame({
 }).round(2)
 
 st.dataframe(acc_df)
+
 st.markdown("---")
 
 # =========================================================
-# HELPER FUNCTION (SMALL IMAGE)
+# HELPER FUNCTION
 # =========================================================
 def show_plot(fig):
     st.pyplot(fig, use_container_width=False)
     plt.close(fig)
 
 # =========================================================
-# VISUALIZATIONS (TABLE FIRST → IMAGE BELOW)
+# VISUALIZATIONS — TABLE → IMAGE (MEDIUM SIZE)
 # =========================================================
 
 # 1️⃣ Class Distribution
@@ -275,46 +283,10 @@ show_plot(fig)
 st.subheader("1️⃣1️⃣ Pair Plot Summary")
 st.dataframe(df_vis[[f1, f2, target]].groupby(target).mean().reset_index())
 
-df_pair = df_vis.sample(min(250, len(df_vis)), random_state=1)
-pair_fig = sns.pairplot(df_pair[[f1, f2, target]], hue=target, plot_kws={"s":6, "alpha":0.5})
-pair_fig.fig.set_size_inches(4, 4)
+df_pair = df_vis.sample(min(300, len(df_vis)), random_state=1)
+pair_fig = sns.pairplot(df_pair[[f1, f2, target]], hue=target, plot_kws={"s":10, "alpha":0.6})
+pair_fig.fig.set_size_inches(6, 6)
 st.pyplot(pair_fig.fig, use_container_width=False)
 plt.close("all")
 
-# =========================================================
-# PDF DOWNLOAD
-# =========================================================
-def generate_pdf():
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
-    styles = getSampleStyleSheet()
-    elements = []
-
-    elements.append(Paragraph("IDS Final Report", styles["Title"]))
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph(
-        "The IDS effectively detects intrusions. XGBoost outperforms Linear SVM with higher accuracy.",
-        styles["Normal"]
-    ))
-    elements.append(Spacer(1, 12))
-    elements.append(Table([
-        ["Model", "Accuracy (%)"],
-        ["Linear SVM", f"{acc_svm*100:.2f}"],
-        ["XGBoost", f"{acc_xgb*100:.2f}"]
-    ]))
-
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer
-
-st.markdown("## 📄 Download Report")
-st.download_button(
-    "📥 Download IDS Report (PDF)",
-    generate_pdf(),
-    file_name="IDS_Final_Report.pdf",
-    mime="application/pdf"
-)
-
-st.markdown("<h4 style='text-align:center;'>✅ Dashboard Ready & Streamlit-Safe</h4>", unsafe_allow_html=True)
-
-
+st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
