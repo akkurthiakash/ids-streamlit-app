@@ -52,6 +52,43 @@ canvas, img {
 }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+
+/* ===== TABLE BORDER & GRID LINES ===== */
+table {
+    border-collapse: collapse !important;
+    border: 2px solid #ffffff !important;
+}
+
+/* Header borders */
+thead tr th {
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    background-color: #1f2933 !important;
+}
+
+/* Body cell borders */
+tbody tr td {
+    border: 1.8px solid #ffffff !important;
+    color: #f9fafb !important;
+    font-size: 17px !important;
+    background-color: #2d3748 !important;
+}
+
+/* Table container spacing */
+[data-testid="stTable"],
+[data-testid="stDataFrame"] {
+    width: 85% !important;
+    margin-bottom: 18px;
+    border-radius: 6px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 # =========================================================
 # TITLE
@@ -414,5 +451,6 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
 
