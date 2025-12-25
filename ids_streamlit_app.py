@@ -41,22 +41,23 @@ html, body, [class*="css"] {
 }
 
 /* ===== APP BACKGROUND ===== */
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
+    /* Use Streamlit default background */
+    .stApp {
+        background-color: transparent;
+        color: inherit;
+    }
 
-/* ===== USE STREAMLIT DEFAULT THEME ===== */
-.stApp {
-    background-color: transparent;
-    color: inherit;
-}
-
-/* Keep Times New Roman */
-html, body, [class*="css"] {
-    font-family: "Times New Roman", Times, serif !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
+    /* Times New Roman everywhere */
+    html, body, [class*="css"] {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 /* ===== HEADINGS ===== */
@@ -378,6 +379,7 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
 
 
 
