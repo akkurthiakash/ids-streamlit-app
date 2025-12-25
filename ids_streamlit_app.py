@@ -1,5 +1,5 @@
 # =========================================================
-# IDS STREAMLIT DASHBOARD — FINAL FULL VERSION
+# IDS STREAMLIT DASHBOARD — FINAL VERSION
 # =========================================================
 
 import streamlit as st
@@ -7,12 +7,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Image, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import inch
-from reportlab.lib import colors
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -25,9 +19,14 @@ from sklearn.metrics import (
     precision_recall_curve
 )
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table,
+    Image, PageBreak
+)
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from reportlab.lib import colors
 from io import BytesIO
 
 # ---------------- PAGE CONFIG ----------------
@@ -36,43 +35,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- GLOBAL STYLE ----------------
+# ---------------- TITLE STYLE (ONLY TITLE) ----------------
 st.markdown(
     """
     <style>
-    /* Global font */
-    html, body, [class*="css"], [class*="st-"] {
-        font-family: "Times New Roman", Times, serif !important;
-    }
-
-    /* Headings */
-    h2, h2 span {
-        font-size: 32px !important;
-        font-weight: 800 !important;
-    }
-
-    h3, h3 span {
-        font-size: 26px !important;
-        font-weight: 700 !important;
-    }
-
-    /* Body text */
-    p, li, div, label {
-        font-size: 18px !important;
-        line-height: 1.7 !important;
-    }
-
-    /* Table headers */
-    thead tr th {
-        font-size: 18px !important;
-        font-weight: 800 !important;
-        text-align: center !important;
-    }
-
-    /* Table body */
-    tbody tr td {
-        font-size: 17px !important;
-        text-align: center !important;
+    .ids-title {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 46px;
+        font-weight: 900;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 25px;
     }
     </style>
     """,
@@ -80,33 +53,22 @@ st.markdown(
 )
 
 # =========================================================
-# CENTERED MAIN TITLE (GUARANTEED)
+# MAIN TITLE (CENTERED, TIMES NEW ROMAN)
 # =========================================================
 st.markdown(
-    """
-    <div style="
-        text-align: center;
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 44px;
-        font-weight: 900;
-        margin-top: 10px;
-        margin-bottom: 25px;
-    ">
-        Intrusion Detection System
-    </div>
-    """,
+    '<div class="ids-title">Intrusion Detection System</div>',
     unsafe_allow_html=True
 )
 
 # =========================================================
-# PROJECT OVERVIEW
+# PROJECT OVERVIEW (NORMAL STREAMLIT HEADINGS)
 # =========================================================
 st.markdown("## Project Overview")
 
-st.markdown("""
-This project develops a **Machine Learning–based Intrusion Detection System (IDS)**
-to identify malicious network activity in network traffic.
-""")
+st.markdown(
+    "This project develops a **Machine Learning–based Intrusion Detection System (IDS)** "
+    "to identify malicious network activity in network traffic."
+)
 
 st.markdown("### Aim")
 st.markdown("To classify network traffic accurately as **Normal** or **Attack**.")
@@ -117,20 +79,20 @@ st.markdown("A labeled network traffic dataset containing normal and attack reco
 st.markdown("### Algorithms Used")
 st.markdown("""
 - **Linear SVM** – baseline machine learning model  
-- **XGBoost** – advanced model with improved detection accuracy  
+- **XGBoost** – advanced model with improved detection accuracy
 """)
 
 st.markdown("### Evaluation")
-st.markdown("""
-The system is evaluated using accuracy, confusion matrix, ROC curve,
-precision–recall curve, and other visual analytics.
-""")
+st.markdown(
+    "The system is evaluated using accuracy, confusion matrix, ROC curve, "
+    "precision–recall curve, and other visual analytics."
+)
 
 st.markdown("### Outcomes")
 st.markdown("""
 - XGBoost achieves higher accuracy than SVM  
 - Reduced missed attack detection  
-- Improved intrusion detection reliability  
+- Improved intrusion detection reliability
 """)
 
 st.markdown("---")
@@ -334,9 +296,9 @@ plt.close("all")
 st.markdown("---")
 
 # =========================================================
-# PDF DOWNLOAD
+# PDF DOWNLOAD (ALL 11 PLOTS)
 # =========================================================
-def generate_pdf():
+def generate_full_pdf_all_plots():
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
@@ -351,57 +313,6 @@ def generate_pdf():
     ))
     elements.append(Spacer(1, 12))
 
-    elements.append(Table([
-        ["Model", "Accuracy (%)"],
-        ["Linear SVM", f"{acc_svm*100:.2f}"],
-        ["XGBoost", f"{acc_xgb*100:.2f}"]
-    ]))
-
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer
-
-st.markdown("## Download Complete Report")
-
-st.download_button(
-    "Download IDS Full Report (PDF)",
-    generate_pdf(),
-    file_name="IDS_Full_Project_Report.pdf",
-    mime="application/pdf"
-)
-
-def generate_full_pdf_all_plots():
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
-    styles = getSampleStyleSheet()
-
-    styles["Title"].fontName = "Times-Roman"
-    styles["Title"].fontSize = 18
-
-    styles["Heading2"].fontName = "Times-Roman"
-    styles["Heading2"].fontSize = 14
-
-    styles["Normal"].fontName = "Times-Roman"
-    styles["Normal"].fontSize = 11
-
-    elements = []
-
-    # ---------------- TITLE ----------------
-    elements.append(Paragraph("Intrusion Detection System – Final Report", styles["Title"]))
-    elements.append(Spacer(1, 12))
-
-    # ---------------- OVERVIEW ----------------
-    elements.append(Paragraph("<b>Project Overview</b>", styles["Heading2"]))
-    elements.append(Spacer(1, 6))
-    elements.append(Paragraph(
-        "This project implements a Machine Learning–based Intrusion Detection System (IDS) "
-        "to classify network traffic as Normal or Attack. Linear SVM and XGBoost are used, "
-        "where XGBoost achieves higher accuracy and reduces missed attacks.",
-        styles["Normal"]
-    ))
-    elements.append(Spacer(1, 12))
-
-    # ---------------- ACCURACY TABLE ----------------
     acc_table = Table([
         ["Model", "Accuracy (%)"],
         ["Linear SVM", f"{acc_svm*100:.2f}"],
@@ -409,13 +320,11 @@ def generate_full_pdf_all_plots():
     ])
     acc_table.setStyle([
         ("GRID", (0,0), (-1,-1), 1, colors.black),
-        ("ALIGN", (0,0), (-1,-1), "CENTER"),
-        ("FONTNAME", (0,0), (-1,0), "Times-Bold")
+        ("ALIGN", (0,0), (-1,-1), "CENTER")
     ])
     elements.append(acc_table)
     elements.append(PageBreak())
 
-    # ---------------- HELPER TO ADD FIG ----------------
     def add_plot(fig, title):
         elements.append(Paragraph(title, styles["Heading2"]))
         buf = BytesIO()
@@ -425,62 +334,46 @@ def generate_full_pdf_all_plots():
         elements.append(Image(buf, width=5.5*inch, height=3.5*inch))
         elements.append(PageBreak())
 
-    # ---------------- 1. CLASS DISTRIBUTION ----------------
     fig, ax = plt.subplots()
     sns.countplot(x=y, ax=ax)
     add_plot(fig, "1. Class Distribution")
 
-    # ---------------- 2. ACCURACY COMPARISON ----------------
     fig, ax = plt.subplots()
-    ax.bar(["SVM", "XGBoost"], [acc_svm*100, acc_xgb*100])
-    ax.set_ylabel("Accuracy (%)")
+    ax.bar(["SVM","XGBoost"], [acc_svm*100, acc_xgb*100])
     add_plot(fig, "2. Accuracy Comparison")
 
-    # ---------------- 3. CONFUSION MATRIX ----------------
     fig, ax = plt.subplots()
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
     add_plot(fig, "3. Confusion Matrix")
 
-    # ---------------- 4. ROC CURVE ----------------
     fig, ax = plt.subplots()
-    ax.plot(fpr, tpr)
-    ax.plot([0,1],[0,1],'--')
+    ax.plot(fpr, tpr); ax.plot([0,1],[0,1],'--')
     add_plot(fig, "4. ROC Curve")
 
-    # ---------------- 5. PRECISION–RECALL ----------------
     fig, ax = plt.subplots()
     ax.plot(recall, precision)
     add_plot(fig, "5. Precision–Recall Curve")
 
-    # ---------------- 6. PREDICTION CONFIDENCE ----------------
     fig, ax = plt.subplots()
     ax.hist(y_prob_xgb, bins=20)
     add_plot(fig, "6. Prediction Confidence")
 
-    # ---------------- 7. ERROR BREAKDOWN ----------------
     fig, ax = plt.subplots()
     ax.bar(["TN","FP","FN","TP"], [cm[0,0],cm[0,1],cm[1,0],cm[1,1]])
     add_plot(fig, "7. Error Breakdown")
 
-    # ---------------- 8. FEATURE IMPORTANCE ----------------
     fig, ax = plt.subplots()
     sns.barplot(data=imp_df.head(6), x="Importance", y="Feature", ax=ax)
     add_plot(fig, "8. Feature Importance")
 
-    # ---------------- 9. FEATURE VS CLASS ----------------
-    top_feat = imp_df.iloc[0]["Feature"]
     fig, ax = plt.subplots()
     sns.boxplot(x=df_vis[target], y=df_vis[top_feat], ax=ax)
     add_plot(fig, "9. Feature vs Class")
 
-    # ---------------- 10. SCATTER PLOT ----------------
-    f1, f2 = X.columns[:2]
     fig, ax = plt.subplots()
     sns.scatterplot(data=df_vis, x=f1, y=f2, hue=target, ax=ax)
     add_plot(fig, "10. Scatter Plot")
 
-    # ---------------- 11. PAIR PLOT ----------------
-    pair_df = df_vis[[f1, f2, target]].sample(min(300, len(df_vis)), random_state=1)
     pair_fig = sns.pairplot(pair_df, hue=target)
     buf = BytesIO()
     pair_fig.fig.savefig(buf, format="png", dpi=120)
@@ -493,7 +386,7 @@ def generate_full_pdf_all_plots():
     buffer.seek(0)
     return buffer
 
-st.markdown("## Download Complete IDS Report (PDF)")
+st.markdown("## Download Complete IDS Report")
 
 st.download_button(
     "Download Full IDS Report with All 11 Plots",
