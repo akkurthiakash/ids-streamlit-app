@@ -97,28 +97,59 @@ canvas, img {
 # =========================================================
 # TITLE
 # =========================================================
-st.markdown("<h1> Intrusion Detection System </h1>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <h1 style="
+        text-align: center;
+        font-family: 'Times New Roman', Times, serif;
+        color: white;
+    ">
+         Intrusion Detection System
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # =========================================================
 # BRIEF PROJECT REPORT
 # =========================================================
-st.markdown("##  Project Report ")
-st.markdown("""
-This project implements a **Machine Learning–based Intrusion Detection System (IDS)**
-to classify network traffic as **Normal** or **Attack**.
+st.markdown(
+    """
+    <div style="
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 18px;
+        color: white;
+        line-height: 1.6;
+    ">
+        <h2 style="font-family: 'Times New Roman', Times, serif; color: white;">
+             Project Report 
+        </h2>
 
-A labeled network traffic dataset is used with two models:
-** Support Vector Machine (SVM)** (baseline) and **XGBoost** (advanced).
+        <p>
+        This project implements a <b>Machine Learning–based Intrusion Detection System (IDS)</b>
+        to classify network traffic as <b>Normal</b> or <b>Attack</b>.
+        </p>
 
-The system evaluates performance using accuracy, confusion matrix, ROC curve,
-and other visual analytics.  
-**XGBoost outperforms SVM**, achieving higher accuracy and reducing missed attacks.
+        <p>
+        A labeled network traffic dataset is used with two models:
+        <b>Linear SVM</b> (baseline) and <b>XGBoost</b> (advanced model).
+        </p>
 
-This project demonstrates the practical application of **data science in cybersecurity**
-through preprocessing, modeling, evaluation, and visualization.
-""")
+        <p>
+        The system evaluates performance using accuracy, confusion matrix, ROC curve,
+        and other visual analytics.
+        <b>XGBoost outperforms SVM</b>, achieving higher accuracy and reducing missed attacks.
+        </p>
 
-st.markdown("---")
+        <p>
+        This project demonstrates the practical application of <b>data science in cybersecurity</b>
+        through preprocessing, modeling, evaluation, and visualization.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # =========================================================
 # DATA LOADING
@@ -341,3 +372,4 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
