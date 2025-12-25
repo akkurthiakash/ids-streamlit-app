@@ -43,14 +43,38 @@ thead tr th, tbody tr td {
 # =========================================================
 st.markdown("<h1 style='text-align:center;'> Intrusion Detection System</h1>", unsafe_allow_html=True)
 
+st.markdown("##  Project Preview")
+
 st.markdown("""
-###  Project Overview
-This project implements a **Machine Learning–based Intrusion Detection System (IDS)**
-to classify network traffic as **Normal** or **Attack**.  
-**XGBoost outperforms  SVM Model **, providing better accuracy and reducing missed attacks.
+### Intrusion Detection System (IDS) – Project Overview
+
+**Aim:**  
+The aim of this project is to develop a machine learning–based Intrusion Detection System (IDS) that classifies network traffic as Normal or Attack.
+
+**Dataset:**  
+A network traffic dataset containing labeled records:
+- 0 – Normal traffic  
+- 1 – Attack traffic  
+The dataset is cleaned by removing missing values and duplicates.
+
+**Algorithms Used:**  
+- Linear Support Vector Machine (SVM) – baseline model  
+- XGBoost – advanced model with higher accuracy  
+
+**Purpose:**  
+- Automate intrusion detection  
+- Compare machine learning models  
+- Analyze results using a dashboard  
+
+**Outcomes:**  
+- Accurate classification of network traffic  
+- XGBoost performs better than SVM  
+- Reduced missed attacks  
+
+**Usefulness in Data Science:**  
+Demonstrates data preprocessing, model evaluation, visualization, and real-world application of machine learning.
 """)
 
-st.markdown("---")
 
 # =========================================================
 # DATA LOADING
@@ -292,3 +316,4 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Dashboard Ready & Streamlit-Safe</h4>", unsafe_allow_html=True)
+
