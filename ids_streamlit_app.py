@@ -29,36 +29,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- GLOBAL STYLE (SAFE) ----------------
 st.markdown(
     """
     <style>
-    /* Use Streamlit default background */
-    .stApp {
-        background-color: transparent;
-        color: inherit;
-    }
-
-    /* Times New Roman everywhere */
-    html, body, [class*="css"] {
+    /* Apply Times New Roman everywhere in Streamlit */
+    html, body, [class*="css"], [class*="st-"] {
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* Table styling */
-    table {
-        border-collapse: collapse !important;
-    }
-    thead tr th {
-        font-size: 17px !important;
-        font-weight: bold !important;
-    }
-    tbody tr td {
-        font-size: 16px !important;
-    }
-
-    /* Plot size control */
-    canvas, img {
-        max-width: 750px !important;
+    /* Ensure markdown, tables, buttons, metrics inherit font */
+    p, span, div, label, button, input, textarea {
+        font-family: "Times New Roman", Times, serif !important;
     }
     </style>
     """,
@@ -439,3 +420,4 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
