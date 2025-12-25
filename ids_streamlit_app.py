@@ -35,67 +35,64 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- TITLE STYLE (ONLY TITLE) ----------------
 st.markdown(
     """
     <style>
+    /* ===== GLOBAL FONT: TIMES NEW ROMAN ===== */
+    html, body, [class*="css"], [class*="st-"] {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+
+    /* ===== MAIN TITLE ===== */
     .ids-title {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 46px;
-        font-weight: 900;
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 25px;
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 46px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        margin-top: 10px !important;
+        margin-bottom: 25px !important;
+    }
+
+    /* ===== SIDE / SECTION HEADINGS ===== */
+    h2 {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+    }
+
+    h3 {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+    }
+
+    /* ===== BODY TEXT (MEDIUM SIZE) ===== */
+    p, li, div, label, span {
+        font-size: 17px !important;
+        line-height: 1.6 !important;
+    }
+
+    /* ===== TABLE HEADERS ===== */
+    thead tr th {
+        font-size: 17px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+    }
+
+    /* ===== TABLE BODY ===== */
+    tbody tr td {
+        font-size: 16px !important;
+        text-align: center !important;
+    }
+
+    /* ===== BUTTONS ===== */
+    button {
+        font-size: 16px !important;
+        font-family: "Times New Roman", Times, serif !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# =========================================================
-# MAIN TITLE (CENTERED, TIMES NEW ROMAN)
-# =========================================================
-st.markdown(
-    '<div class="ids-title">Intrusion Detection System</div>',
-    unsafe_allow_html=True
-)
-
-# =========================================================
-# PROJECT OVERVIEW (NORMAL STREAMLIT HEADINGS)
-# =========================================================
-st.markdown("## Project Overview")
-
-st.markdown(
-    "This project develops a **Machine Learning–based Intrusion Detection System (IDS)** "
-    "to identify malicious network activity in network traffic."
-)
-
-st.markdown("### Aim")
-st.markdown("To classify network traffic accurately as **Normal** or **Attack**.")
-
-st.markdown("### Dataset")
-st.markdown("A labeled network traffic dataset containing normal and attack records.")
-
-st.markdown("### Algorithms Used")
-st.markdown("""
-- **Linear SVM** – baseline machine learning model  
-- **XGBoost** – advanced model with improved detection accuracy
-""")
-
-st.markdown("### Evaluation")
-st.markdown(
-    "The system is evaluated using accuracy, confusion matrix, ROC curve, "
-    "precision–recall curve, and other visual analytics."
-)
-
-st.markdown("### Outcomes")
-st.markdown("""
-- XGBoost achieves higher accuracy than SVM  
-- Reduced missed attack detection  
-- Improved intrusion detection reliability
-""")
-
-st.markdown("---")
 
 # =========================================================
 # FILE UPLOAD
@@ -394,3 +391,4 @@ st.download_button(
     file_name="IDS_Full_Report_All_Visualizations.pdf",
     mime="application/pdf"
 )
+
