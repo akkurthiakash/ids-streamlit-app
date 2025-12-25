@@ -58,7 +58,7 @@ A network traffic dataset containing labeled records:
 The dataset is cleaned by removing missing values and duplicates.
 
 **Algorithms Used:**  
-- Linear Support Vector Machine (SVM) – baseline model  
+-  Support Vector Machine (SVM) – baseline model  
 - XGBoost – advanced model with higher accuracy  
 
 **Purpose:**  
@@ -316,4 +316,5 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Dashboard Ready & Streamlit-Safe</h4>", unsafe_allow_html=True)
+
 
