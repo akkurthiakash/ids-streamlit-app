@@ -32,41 +32,61 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* ===== GLOBAL FONT: Times New Roman ===== */
+    /* ===== GLOBAL FONT ===== */
     html, body, [class*="css"], [class*="st-"] {
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* ===== HEADINGS: KEEP DEFAULT SIZE, CHANGE FONT ONLY ===== */
-    h1, h2, h3, h4, h5, h6 {
+    /* ===== TITLE (BIG & THICK) ===== */
+    h1 {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: inherit !important;   /* keep Streamlit default size */
-        font-weight: inherit !important;
+        font-size: 36px !important;     /* BIG */
+        font-weight: 800 !important;    /* THICK */
     }
 
-    /* ===== BODY TEXT: MEDIUM SIZE ===== */
+    /* ===== MAIN HEADINGS ===== */
+    h2 {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 28px !important;
+        font-weight: 700 !important;
+    }
+
+    h3 {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
+    }
+
+    /* ===== SUB-HEADINGS ===== */
+    h4, h5, h6 {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+    }
+
+    /* ===== BODY TEXT (MEDIUM) ===== */
     p, span, div, label, li {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 17px !important;   /* medium readable size */
-        line-height: 1.6 !important;
+        font-size: 17px !important;
+        line-height: 1.65 !important;
     }
 
     /* ===== TABLE TEXT ===== */
     thead tr th {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
     }
 
     tbody tr td {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 15.5px !important;
+        font-size: 16px !important;
     }
 
     /* ===== BUTTONS & INPUTS ===== */
     button, input, textarea {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 15.5px !important;
+        font-size: 16px !important;
     }
     </style>
     """,
@@ -482,5 +502,6 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
 
