@@ -18,25 +18,40 @@ from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, precisi
 st.set_page_config(page_title="IDS Dashboard", layout="wide")
 
 # ---------------- MEDIUM SIZE SETTINGS ----------------
-MAX_FIG = (4.5, 3.2)
+MAX_FIG = (4.5, 3.5)
 plt.rcParams["figure.dpi"] = 110
 
 # ---------------- MEDIUM TABLE & IMAGE STYLE ----------------
 st.markdown("""
 <style>
+/* Increase table text size (medium-large) */
+thead tr th {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+}
+
+tbody tr td {
+    font-size: 16px !important;
+}
+
+/* Add comfortable spacing */
 thead tr th, tbody tr td {
-    font-size: 15px !important;
-    padding: 6px 10px !important;
+    padding: 8px 14px !important;
 }
+
+/* Keep tables centered and readable */
 [data-testid="stDataFrame"] {
-    width: 80% !important;
-    margin-bottom: 14px;
+    width: 85% !important;
+    margin-bottom: 16px;
 }
+
+/* Keep images medium-sized */
 canvas, img {
     max-width: 650px !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # =========================================================
 # TITLE
@@ -290,3 +305,4 @@ st.pyplot(pair_fig.fig, use_container_width=False)
 plt.close("all")
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
