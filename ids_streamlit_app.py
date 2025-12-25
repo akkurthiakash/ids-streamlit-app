@@ -28,67 +28,67 @@ st.set_page_config(
     page_title="Intrusion Detection System",
     layout="wide"
 )
-
 st.markdown(
     """
     <style>
-    /* Apply Times New Roman everywhere in Streamlit */
+    /* ===== FORCE TIMES NEW ROMAN EVERYWHERE ===== */
     html, body, [class*="css"], [class*="st-"] {
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* Ensure markdown, tables, buttons, metrics inherit font */
-    p, span, div, label, button, input, textarea {
+    /* ===== FORCE BIG TITLE ===== */
+    h1, h1 span {
         font-family: "Times New Roman", Times, serif !important;
+        font-size: 42px !important;     /* VERY BIG */
+        font-weight: 900 !important;    /* VERY THICK */
+        line-height: 1.3 !important;
+    }
+
+    /* ===== FORCE SECTION HEADINGS ===== */
+    h2, h2 span {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+        line-height: 1.35 !important;
+    }
+
+    h3, h3 span {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 26px !important;
+        font-weight: 700 !important;
+    }
+
+    /* ===== BODY TEXT (MEDIUM) ===== */
+    p, li, span, div, label {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 18px !important;     /* MEDIUM & CLEAR */
+        line-height: 1.7 !important;
+    }
+
+    /* ===== TABLE TEXT ===== */
+    thead tr th {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+    }
+
+    tbody tr td {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 17px !important;
+    }
+
+    /* ===== BUTTONS ===== */
+    button, input, textarea {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 17px !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# =========================================================
-# TITLE
-# =========================================================
-st.markdown(
-    "<h1 style='text-align:center;'>Intrusion Detection System </h1>",
-    unsafe_allow_html=True
-)
 
-# =========================================================
-# PROJECT OVERVIEW (NORMAL TEXT — NO BACKGROUND)
-# =========================================================
-st.markdown("## Project Overview")
 
-st.markdown("""
-This project develops a Machine Learning–based Intrusion Detection System (IDS)
-to identify malicious network activity in network traffic.
-
-### Aim
-To classify network traffic accurately as Normal or Attack.
-
-### Dataset
-A labeled network traffic dataset containing normal and attack records.
-
-### Algorithms Used
--  SVM – baseline machine learning model  
-- XGBoost – advanced model with improved detection accuracy  
-
-### Evaluation
-The system performance is evaluated using accuracy, confusion matrix,
-ROC curve, precision–recall analysis, and other visual analytics.
-
-### Outcomes
-- XGBoost achieves higher accuracy than SVM  
-- Reduced missed attack detection  
-- Improved intrusion detection reliability  
-
-### Importance in Data Science
-This project demonstrates the practical application of data science in
-cybersecurity through preprocessing, machine learning modeling,
-evaluation, and visualization.
-""")
-
-st.markdown("---")
 
 # =========================================================
 # DATA LOADING
@@ -420,4 +420,5 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
