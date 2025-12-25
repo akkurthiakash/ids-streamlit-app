@@ -56,18 +56,27 @@ canvas, img {
 # =========================================================
 # TITLE
 # =========================================================
-st.markdown("<h1 style='text-align:center;'>🛡️ Intrusion Detection System Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'> Intrusion Detection System </h1>", unsafe_allow_html=True)
 
 # =========================================================
 # PROJECT PREVIEW
 # =========================================================
-st.markdown("## 📘 Project Preview")
+st.markdown("##  Project Report ")
+
 st.markdown("""
-This project builds a **Machine Learning–based Intrusion Detection System (IDS)**
-to classify network traffic as **Normal** or **Attack** using SVM and XGBoost.
+This project implements a **machine learning–based Intrusion Detection System (IDS)**
+to classify network traffic as **Normal** or **Attack**.
+
+A labeled network traffic dataset is used, and two models are applied:
+** SVM** (baseline) and **XGBoost** (advanced model).
+
+The system evaluates model performance using accuracy and visual analytics.
+**XGBoost outperforms SVM**, achieving higher accuracy and reducing missed attacks.
+
+The project highlights the practical use of **data science in cybersecurity**
+through preprocessing, modeling, evaluation, and visualization.
 """)
 
-st.markdown("---")
 
 # =========================================================
 # DATA LOADING
@@ -135,7 +144,7 @@ df_vis = df.sample(min(1500, len(df)), random_state=42)
 # =========================================================
 # ⭐ ACCURACY TABLE (AT TOP — REQUIRED)
 # =========================================================
-st.markdown("## ⭐ Accuracy Summary")
+st.markdown("##  Accuracy Summary")
 
 acc_table = pd.DataFrame({
     "Model": ["Linear SVM", "XGBoost"],
@@ -405,4 +414,5 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
