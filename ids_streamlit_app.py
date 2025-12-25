@@ -78,6 +78,29 @@ st.markdown(
         font-size: 17px !important;
     }
 
+st.markdown(
+    """
+    <style>
+    /* ===== TABLE HEADER (BOLD & CLEAR) ===== */
+    thead tr th {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 18px !important;
+        font-weight: 800 !important;   /* STRONG BOLD */
+        text-align: center !important;
+    }
+
+    /* ===== TABLE BODY ===== */
+    tbody tr td {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 17px !important;
+        font-weight: 500 !important;
+        text-align: center !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
     /* ===== BUTTONS ===== */
     button, input, textarea {
         font-family: "Times New Roman", Times, serif !important;
@@ -497,6 +520,7 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
 
 
