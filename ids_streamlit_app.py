@@ -29,6 +29,23 @@ st.set_page_config(
     page_title="Intrusion Detection System",
     layout="wide"
 )
+st.markdown(
+    """
+    <style>
+    /* Apply Times New Roman everywhere in Streamlit */
+    html, body, [class*="css"], [class*="st-"] {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+
+    /* Ensure markdown, tables, buttons, metrics inherit font */
+    p, span, div, label, button, input, textarea {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # ---------------- GLOBAL STYLE (SAFE) ----------------
 st.markdown(
@@ -439,3 +456,4 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
