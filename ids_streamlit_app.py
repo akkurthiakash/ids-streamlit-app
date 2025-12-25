@@ -32,20 +32,46 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Apply Times New Roman everywhere in Streamlit */
+    /* ===== GLOBAL FONT: Times New Roman ===== */
     html, body, [class*="css"], [class*="st-"] {
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* Ensure markdown, tables, buttons, metrics inherit font */
-    p, span, div, label, button, input, textarea {
+    /* ===== HEADINGS: KEEP DEFAULT SIZE, CHANGE FONT ONLY ===== */
+    h1, h2, h3, h4, h5, h6 {
         font-family: "Times New Roman", Times, serif !important;
+        font-size: inherit !important;   /* keep Streamlit default size */
+        font-weight: inherit !important;
+    }
+
+    /* ===== BODY TEXT: MEDIUM SIZE ===== */
+    p, span, div, label, li {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 17px !important;   /* medium readable size */
+        line-height: 1.6 !important;
+    }
+
+    /* ===== TABLE TEXT ===== */
+    thead tr th {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+    }
+
+    tbody tr td {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 15.5px !important;
+    }
+
+    /* ===== BUTTONS & INPUTS ===== */
+    button, input, textarea {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 15.5px !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 # ---------------- GLOBAL STYLE (SAFE) ----------------
 st.markdown(
@@ -87,7 +113,7 @@ st.markdown(
 # TITLE
 # =========================================================
 st.markdown(
-    "<h1 style='text-align:center;'>Intrusion Detection System Dashboard</h1>",
+    "<h1 style='text-align:center;'>Intrusion Detection System </h1>",
     unsafe_allow_html=True
 )
 
@@ -456,4 +482,5 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
