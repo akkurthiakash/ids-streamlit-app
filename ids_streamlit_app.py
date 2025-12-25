@@ -30,7 +30,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- GLOBAL STYLE ----------------
 st.markdown(
     """
     <style>
@@ -39,15 +38,19 @@ st.markdown(
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* ===== TITLE & HEADINGS ===== */
+    /* ===== CENTERED MAIN TITLE ===== */
     h1, h1 span {
-        font-size: 42px !important;
+        text-align: center !important;
+        font-size: 44px !important;
         font-weight: 900 !important;
+        margin-bottom: 10px !important;
     }
 
+    /* ===== SECTION HEADINGS ===== */
     h2, h2 span {
         font-size: 32px !important;
         font-weight: 800 !important;
+        margin-top: 20px !important;
     }
 
     h3, h3 span {
@@ -59,9 +62,10 @@ st.markdown(
     p, li, div, label {
         font-size: 18px !important;
         line-height: 1.7 !important;
+        text-align: left !important;
     }
 
-    /* ===== TABLE HEADERS (BOLD) ===== */
+    /* ===== TABLE HEADERS ===== */
     thead tr th {
         font-size: 18px !important;
         font-weight: 800 !important;
@@ -74,6 +78,12 @@ st.markdown(
         font-weight: 500 !important;
         text-align: center !important;
     }
+
+    /* ===== BUTTON TEXT ===== */
+    button {
+        font-size: 16px !important;
+        font-family: "Times New Roman", Times, serif !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -83,6 +93,7 @@ st.markdown(
 # TITLE
 # =========================================================
 st.markdown("# Intrusion Detection System ")
+
 
 # =========================================================
 # PROJECT OVERVIEW
@@ -353,3 +364,4 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
