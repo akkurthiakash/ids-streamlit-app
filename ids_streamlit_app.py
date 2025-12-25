@@ -41,10 +41,23 @@ html, body, [class*="css"] {
 }
 
 /* ===== APP BACKGROUND ===== */
+st.markdown("""
+<style>
+
+/* ===== USE STREAMLIT DEFAULT THEME ===== */
 .stApp {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #ffffff;
+    background-color: transparent;
+    color: inherit;
 }
+
+/* Keep Times New Roman */
+html, body, [class*="css"] {
+    font-family: "Times New Roman", Times, serif !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 /* ===== HEADINGS ===== */
 h1, h2, h3, h4 {
@@ -113,71 +126,36 @@ st.markdown(
 # =========================================================
 # BRIEF PROJECT REPORT
 # =========================================================
-st.markdown(
-    """
-    <div style="
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 18px;
-        color: #f9fafb;
-        background-color: #262730;
-        padding: 20px 24px;
-        border-radius: 10px;
-        line-height: 1.8;
-    ">
+st.markdown("## Project Overview")
 
-        <h2 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-             Project Overview
-        </h2>
+st.markdown("""
+This project develops a Machine Learning–based Intrusion Detection System (IDS)
+to identify malicious network activity in network traffic.
 
-         This project develops a <b>Machine Learning–based Intrusion Detection System (IDS)</b>
-        to identify malicious network activity.<br><br>
+### Aim
+To classify network traffic accurately as Normal or Attack.
 
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-            🎯 Aim
-        </h3>
+### Dataset
+A labeled network traffic dataset containing normal and attack records.
 
-         To classify network traffic accurately as <b>Normal</b> or <b>Attack</b>.<br><br>
+### Algorithms Used
+- Linear SVM – baseline machine learning model  
+- XGBoost – advanced model with improved detection accuracy  
 
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-             Dataset
-        </h3>
+### Evaluation
+The system performance is evaluated using accuracy, confusion matrix,
+ROC curve, precision–recall analysis, and other visual analytics.
 
-         A labeled network traffic dataset containing normal and attack records.<br><br>
+### Outcomes
+- XGBoost achieves higher accuracy than SVM  
+- Reduced missed attack detection  
+- Improved intrusion detection reliability  
 
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-            ⚙️ Algorithms Used
-        </h3>
-
-         <b>Linear SVM</b> – baseline machine learning model.<br>
-         <b>XGBoost</b> – advanced model with improved detection accuracy.<br><br>
-
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-            📊 Evaluation
-        </h3>
-
-         Performance evaluated using accuracy, confusion matrix, ROC curve,
-        and other visual analytics.<br><br>
-
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-            ✅ Outcomes
-        </h3>
-
-         <b>XGBoost outperforms SVM</b> with higher accuracy.<br>
-         Reduced missed attack detection.<br><br>
-
-        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
-            📈 Importance in Data Science
-        </h3>
-
-         Demonstrates real-world application of data science in
-        <b>cybersecurity</b> through preprocessing, modeling, evaluation,
-        and visualization.
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
+### Importance in Data Science
+This project demonstrates the practical application of data science in
+cybersecurity through data preprocessing, machine learning modeling,
+evaluation, and visualization.
+""")
 
 # =========================================================
 # DATA LOADING
@@ -400,5 +378,6 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
 
 
