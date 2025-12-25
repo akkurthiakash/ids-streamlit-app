@@ -118,33 +118,61 @@ st.markdown(
     <div style="
         font-family: 'Times New Roman', Times, serif;
         font-size: 18px;
-        color: white;
-        line-height: 1.6;
+        color: #f9fafb;
+        background-color: #262730;
+        padding: 20px 24px;
+        border-radius: 10px;
+        line-height: 1.8;
     ">
-        <h2 style="font-family: 'Times New Roman', Times, serif; color: white;">
-             Project Report 
+
+        <h2 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+             Project Overview
         </h2>
 
-        <p>
-        This project implements a <b>Machine Learning–based Intrusion Detection System (IDS)</b>
-        to classify network traffic as <b>Normal</b> or <b>Attack</b>.
-        </p>
+         This project develops a <b>Machine Learning–based Intrusion Detection System (IDS)</b>
+        to identify malicious network activity.<br><br>
 
-        <p>
-        A labeled network traffic dataset is used with two models:
-        <b>Linear SVM</b> (baseline) and <b>XGBoost</b> (advanced model).
-        </p>
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+            🎯 Aim
+        </h3>
 
-        <p>
-        The system evaluates performance using accuracy, confusion matrix, ROC curve,
-        and other visual analytics.
-        <b>XGBoost outperforms SVM</b>, achieving higher accuracy and reducing missed attacks.
-        </p>
+         To classify network traffic accurately as <b>Normal</b> or <b>Attack</b>.<br><br>
 
-        <p>
-        This project demonstrates the practical application of <b>data science in cybersecurity</b>
-        through preprocessing, modeling, evaluation, and visualization.
-        </p>
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+             Dataset
+        </h3>
+
+         A labeled network traffic dataset containing normal and attack records.<br><br>
+
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+            ⚙️ Algorithms Used
+        </h3>
+
+         <b>Linear SVM</b> – baseline machine learning model.<br>
+         <b>XGBoost</b> – advanced model with improved detection accuracy.<br><br>
+
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+            📊 Evaluation
+        </h3>
+
+         Performance evaluated using accuracy, confusion matrix, ROC curve,
+        and other visual analytics.<br><br>
+
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+            ✅ Outcomes
+        </h3>
+
+         <b>XGBoost outperforms SVM</b> with higher accuracy.<br>
+         Reduced missed attack detection.<br><br>
+
+        <h3 style="font-family: 'Times New Roman', Times, serif; color: #ffffff;">
+            📈 Importance in Data Science
+        </h3>
+
+         Demonstrates real-world application of data science in
+        <b>cybersecurity</b> through preprocessing, modeling, evaluation,
+        and visualization.
+
     </div>
     """,
     unsafe_allow_html=True
@@ -372,4 +400,5 @@ st.download_button(
 )
 
 st.markdown("<h4 style='text-align:center;'>✅ Final Dashboard Ready</h4>", unsafe_allow_html=True)
+
 
