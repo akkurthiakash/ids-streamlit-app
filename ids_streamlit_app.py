@@ -32,59 +32,16 @@ st.set_page_config(
     page_title="Intrusion Detection System",
     layout="wide"
 )
-
-# ---------------- GLOBAL STYLE ----------------
 st.markdown(
     """
     <style>
-    /* ===== GLOBAL FONT ===== */
-    html, body, [class*="css"], [class*="st-"] {
-        font-family: "Times New Roman", Times, serif !important;
-    }
-
-    /* ===== MAIN TITLE ===== */
     .ids-title {
-        font-size: 46px;
-        font-weight: 900;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 56px;          /* BIG */
+        font-weight: 900;         /* THICK */
         text-align: center;
-        margin-top: 10px;
-        margin-bottom: 25px;
-    }
-
-    /* ===== SIDE HEADINGS ===== */
-    h2 {
-        font-size: 28px !important;
-        font-weight: 700 !important;
-    }
-
-    h3 {
-        font-size: 22px !important;
-        font-weight: 600 !important;
-    }
-
-    /* ===== BODY TEXT (MEDIUM) ===== */
-    p, li, div, label, span {
-        font-size: 17px !important;
-        line-height: 1.6 !important;
-    }
-
-    /* ===== TABLE HEADERS ===== */
-    thead tr th {
-        font-size: 17px !important;
-        font-weight: 800 !important;
-        text-align: center !important;
-    }
-
-    /* ===== TABLE BODY ===== */
-    tbody tr td {
-        font-size: 16px !important;
-        text-align: center !important;
-    }
-
-    /* ===== BUTTONS ===== */
-    button {
-        font-size: 16px !important;
-        font-family: "Times New Roman", Times, serif !important;
+        margin-top: 40px;         /* PUSH DOWN */
+        margin-bottom: 40px;      /* SPACE BELOW */
     }
     </style>
     """,
@@ -99,21 +56,27 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+
 # =========================================================
 # PROJECT OVERVIEW
 # =========================================================
 st.markdown("## Project Overview")
 
-st.markdown("""
-This project implements a **Machine Learning–based Intrusion Detection System (IDS)**
-to classify network traffic as **Normal** or **Attack**.
-""")
+st.markdown(
+    "This project implements a **Machine Learning–based Intrusion Detection System (IDS)** "
+    "to classify network traffic as **Normal** or **Attack**."
+)
 
 st.markdown("### Aim")
-st.markdown("To detect malicious network activity using supervised machine learning models.")
+st.markdown(
+    "To detect malicious network activity using supervised machine learning models."
+)
 
 st.markdown("### Dataset")
-st.markdown("A labeled network traffic dataset containing normal and attack records.")
+st.markdown(
+    "A labeled network traffic dataset containing normal and attack records."
+)
 
 st.markdown("### Algorithms Used")
 st.markdown("""
@@ -128,7 +91,6 @@ st.markdown("""
 - Improved intrusion detection reliability
 """)
 
-st.markdown("---")
 
 # =========================================================
 # FILE UPLOAD
@@ -305,3 +267,4 @@ st.pyplot(pair_fig.fig)
 plt.close("all")
 
 st.success("Dashboard execution completed successfully ✔")
+
