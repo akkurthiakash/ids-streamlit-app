@@ -35,18 +35,65 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* ===== FORCE TIMES NEW ROMAN EVERYWHERE ===== */
+
+    /* Streamlit text blocks */
+    div[data-testid="stMarkdownContainer"] * {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+
+    /* Headings */
+    div[data-testid="stMarkdownContainer"] h2 {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+    }
+
+    div[data-testid="stMarkdownContainer"] h3 {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Body text */
+    div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stMarkdownContainer"] li {
+        font-size: 17px !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Tables */
+    thead tr th {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 17px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+    }
+
+    tbody tr td {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 16px !important;
+        text-align: center !important;
+    }
+
+    /* Buttons */
+    button {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 16px !important;
+    }
+
+    /* ===== TITLE (BIGGER) ===== */
     .ids-title {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 56px;          /* BIG */
-        font-weight: 900;         /* THICK */
-        text-align: center;
-        margin-top: 40px;         /* PUSH DOWN */
-        margin-bottom: 40px;      /* SPACE BELOW */
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 56px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        margin-top: 40px !important;
+        margin-bottom: 40px !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # =========================================================
 # MAIN TITLE
@@ -267,4 +314,5 @@ st.pyplot(pair_fig.fig)
 plt.close("all")
 
 st.success("Dashboard execution completed successfully ✔")
+
 
