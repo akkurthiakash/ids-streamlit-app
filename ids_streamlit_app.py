@@ -32,61 +32,56 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* ===== GLOBAL FONT ===== */
+    /* ===== FORCE TIMES NEW ROMAN EVERYWHERE ===== */
     html, body, [class*="css"], [class*="st-"] {
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    /* ===== TITLE (BIG & THICK) ===== */
-    h1 {
+    /* ===== FORCE BIG TITLE ===== */
+    h1, h1 span {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 36px !important;     /* BIG */
-        font-weight: 800 !important;    /* THICK */
+        font-size: 42px !important;     /* VERY BIG */
+        font-weight: 900 !important;    /* VERY THICK */
+        line-height: 1.3 !important;
     }
 
-    /* ===== MAIN HEADINGS ===== */
-    h2 {
+    /* ===== FORCE SECTION HEADINGS ===== */
+    h2, h2 span {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 28px !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+        line-height: 1.35 !important;
+    }
+
+    h3, h3 span {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 26px !important;
         font-weight: 700 !important;
-    }
-
-    h3 {
-        font-family: "Times New Roman", Times, serif !important;
-        font-size: 22px !important;
-        font-weight: 700 !important;
-    }
-
-    /* ===== SUB-HEADINGS ===== */
-    h4, h5, h6 {
-        font-family: "Times New Roman", Times, serif !important;
-        font-size: 18px !important;
-        font-weight: 600 !important;
     }
 
     /* ===== BODY TEXT (MEDIUM) ===== */
-    p, span, div, label, li {
+    p, li, span, div, label {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 17px !important;
-        line-height: 1.65 !important;
+        font-size: 18px !important;     /* MEDIUM & CLEAR */
+        line-height: 1.7 !important;
     }
 
     /* ===== TABLE TEXT ===== */
     thead tr th {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 17px !important;
+        font-size: 18px !important;
         font-weight: 700 !important;
     }
 
     tbody tr td {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 16px !important;
+        font-size: 17px !important;
     }
 
-    /* ===== BUTTONS & INPUTS ===== */
+    /* ===== BUTTONS ===== */
     button, input, textarea {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 16px !important;
+        font-size: 17px !important;
     }
     </style>
     """,
@@ -502,6 +497,7 @@ st.download_button(
     file_name="IDS_Full_Project_Report.pdf",
     mime="application/pdf"
 )
+
 
 
 
