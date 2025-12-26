@@ -92,33 +92,32 @@ st.markdown('<div class="ids-title">Intrusion Detection System</div>', unsafe_al
 # =========================================================
 # PROJECT OVERVIEW
 # =========================================================
-st.markdown("## Project Overview")
+st.markdown("## Project Preview")
 
-st.markdown(
-    "This project implements a **Machine Learning–based Intrusion Detection System (IDS)** "
-    "to classify network traffic as **Normal** or **Attack**."
-)
-
-st.markdown("### Aim")
-st.markdown("To detect malicious network activity using supervised machine learning models.")
-
-st.markdown("### Dataset")
-st.markdown("A labeled network traffic dataset containing normal and attack records.")
-
-st.markdown("### Algorithms Used")
 st.markdown("""
-- **Linear SVM** – baseline classification model  
-- **XGBoost** – advanced ensemble model with higher accuracy
-""")
+- This project focuses on designing a **Machine Learning–based Intrusion Detection System (IDS)**  
+  to monitor and analyze network traffic.
 
-st.markdown("### Outcomes")
-st.markdown("""
-- XGBoost outperforms Linear SVM  
-- Reduced missed attack detection  
-- Improved intrusion detection reliability
-""")
+- The IDS classifies traffic into two categories:
+  **Normal traffic** and **Attack traffic**.
 
-st.markdown("---")
+- A labeled network traffic dataset is used to train and test the models.
+
+- Two supervised learning algorithms are implemented:
+  ** SVM** as a baseline model and **XGBoost** as an advanced model.
+
+- The system evaluates performance using:
+  accuracy, confusion matrix, ROC curve, precision–recall curve, and feature importance.
+
+- Experimental results show that **XGBoost achieves higher accuracy and better attack detection**
+  compared to  SVM.
+
+- The dashboard provides interactive tables and visualizations for better analysis
+  and interpretation of results.
+
+- The project demonstrates the practical application of **data science and machine learning
+  in cybersecurity**, making it suitable for real-world intrusion detection scenarios.
+""")
 
 # =========================================================
 # FILE UPLOAD
@@ -428,6 +427,7 @@ st.download_button(
     file_name="IDS_Final_Report_Medium_Plots.pdf",
     mime="application/pdf"
 )
+
 
 
 
