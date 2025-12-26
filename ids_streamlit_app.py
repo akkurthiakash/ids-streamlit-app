@@ -48,7 +48,7 @@ div[data-testid="stMarkdownContainer"] * {
 }
 h2 { font-size: 24px !important; font-weight: 700 !important; }
 h3 { font-size: 24px !important; font-weight: 600 !important; }
-p, li { font-size: 17px !important; line-height: 1.6 !important; }
+p, li { font-size: 20px !important; line-height: 1.6 !important; }
 
 table, th, td {
     border: 2px solid white !important;
@@ -500,5 +500,6 @@ st.download_button(
     file_name="IDS_Final_Report_Full.pdf",
     mime="application/pdf"
 )
+
 
 
