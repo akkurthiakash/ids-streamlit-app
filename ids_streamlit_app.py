@@ -110,7 +110,7 @@ st.markdown("""
   accuracy, confusion matrix, ROC curve, precision–recall curve, and feature importance.
 
 - Experimental results show that **XGBoost achieves higher accuracy and better attack detection**
-  compared to  SVM.
+  compared to SVM.
 
 - The dashboard provides interactive tables and visualizations for better analysis
   and interpretation of results.
@@ -118,6 +118,7 @@ st.markdown("""
 - The project demonstrates the practical application of **data science and machine learning
   in cybersecurity**, making it suitable for real-world intrusion detection scenarios.
 """)
+
 
 # =========================================================
 # FILE UPLOAD
@@ -427,6 +428,7 @@ st.download_button(
     file_name="IDS_Final_Report_Medium_Plots.pdf",
     mime="application/pdf"
 )
+
 
 
 
