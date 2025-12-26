@@ -53,17 +53,17 @@ st.markdown(
     }
 
     tbody tr td {
-        font-size: 16px !important;
+        font-size: 18px !important;
         text-align: center !important;
     }
 
     button {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
-
+    
     .ids-title {
-        font-size: 54px !important;
+        font-size: 50px !important;
         font-weight: 900 !important;
         text-align: center !important;
         margin-top: 40px !important;
@@ -428,3 +428,4 @@ st.download_button(
     file_name="IDS_Final_Report_Medium_Plots.pdf",
     mime="application/pdf"
 )
+
