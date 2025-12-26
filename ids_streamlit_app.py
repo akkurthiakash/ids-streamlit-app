@@ -74,6 +74,33 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+    """
+    <style>
+    /* ===== BOLD TABLE BORDERS ===== */
+    table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+
+    table, th, td {
+        border: 2px solid white !important;   /* bold lines */
+    }
+
+    th {
+        font-weight: 800 !important;
+        text-align: center !important;
+    }
+
+    td {
+        text-align: center !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # ---------------- PLOT SIZE CONTROL ----------------
 MEDIUM_FIGSIZE = (5.2, 3.2)
 plt.rcParams["figure.dpi"] = 110
@@ -428,6 +455,7 @@ st.download_button(
     file_name="IDS_Final_Report_Medium_Plots.pdf",
     mime="application/pdf"
 )
+
 
 
 
