@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ---------- GLOBAL PLOT SIZE (MEDIUM) ----------
-MEDIUM_FIGSIZE = (3.5, 2.5)   # width, height in inches
+MEDIUM_FIGSIZE = (2.5, 2.5)   # width, height in inches
 plt.rcParams["figure.dpi"] = 100
 
 from reportlab.platypus import (
@@ -63,14 +63,14 @@ st.markdown(
     }
 
     div[data-testid="stMarkdownContainer"] h3 {
-        font-size: 24px !important;
+        font-size: 22px !important;
         font-weight: 600 !important;
     }
 
     /* Body text */
     div[data-testid="stMarkdownContainer"] p,
     div[data-testid="stMarkdownContainer"] li {
-        font-size: 24px !important;
+        font-size: 22px !important;
         line-height: 1.6 !important;
     }
 
@@ -91,7 +91,7 @@ st.markdown(
     /* Buttons */
     button {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 20px !important;
+        font-size: 18px !important;
     }
 
     /* ===== TITLE (BIGGER) ===== */
@@ -459,6 +459,7 @@ st.download_button(
     file_name="IDS_Final_Report.pdf",
     mime="application/pdf"
 )
+
 
 
 
