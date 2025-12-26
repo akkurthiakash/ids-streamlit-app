@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ---------- GLOBAL PLOT SIZE (MEDIUM) ----------
-MEDIUM_FIGSIZE = (2.5, 2.5)   # width, height in inches
-plt.rcParams["figure.dpi"] = 100
+MEDIUM_FIGSIZE = (2.5, 1.5)   # width, height in inches
+plt.rcParams["figure.dpi"] = 110
 
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table,
@@ -459,6 +459,7 @@ st.download_button(
     file_name="IDS_Final_Report.pdf",
     mime="application/pdf"
 )
+
 
 
 
