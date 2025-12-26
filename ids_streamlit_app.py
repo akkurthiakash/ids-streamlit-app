@@ -41,29 +41,29 @@ st.markdown(
         font-family: "Times New Roman", Times, serif !important;
     }
 
-    h2 { font-size: 28px !important; font-weight: 700 !important; }
+    h2 { font-size: 24px !important; font-weight: 700 !important; }
     h3 { font-size: 22px !important; font-weight: 600 !important; }
 
     p, li { font-size: 17px !important; line-height: 1.6 !important; }
 
     thead tr th {
-        font-size: 17px !important;
+        font-size: 20px !important;
         font-weight: 800 !important;
         text-align: center !important;
     }
 
     tbody tr td {
-        font-size: 18px !important;
+        font-size: 20px !important;
         text-align: center !important;
     }
 
     button {
         font-family: "Times New Roman", Times, serif !important;
-        font-size: 18px !important;
+        font-size: 20px !important;
     }
     
     .ids-title {
-        font-size: 50px !important;
+        font-size: 48px !important;
         font-weight: 900 !important;
         text-align: center !important;
         margin-top: 40px !important;
@@ -428,4 +428,5 @@ st.download_button(
     file_name="IDS_Final_Report_Medium_Plots.pdf",
     mime="application/pdf"
 )
+
 
