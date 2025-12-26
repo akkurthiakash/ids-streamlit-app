@@ -46,8 +46,8 @@ st.markdown("""
 div[data-testid="stMarkdownContainer"] * {
     font-family: "Times New Roman", Times, serif !important;
 }
-h2 { font-size: 28px !important; font-weight: 700 !important; }
-h3 { font-size: 22px !important; font-weight: 600 !important; }
+h2 { font-size: 24px !important; font-weight: 700 !important; }
+h3 { font-size: 24px !important; font-weight: 600 !important; }
 p, li { font-size: 17px !important; line-height: 1.6 !important; }
 
 table, th, td {
@@ -63,7 +63,7 @@ tbody tr td {
 }
 
 .ids-title {
-    font-size: 56px !important;
+    font-size: 48px !important;
     font-weight: 900 !important;
     text-align: center !important;
     margin: 40px 0 !important;
@@ -500,4 +500,5 @@ st.download_button(
     file_name="IDS_Final_Report_Full.pdf",
     mime="application/pdf"
 )
+
 
