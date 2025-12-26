@@ -8,6 +8,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# ---------- GLOBAL PLOT SIZE (MEDIUM) ----------
+MEDIUM_FIGSIZE = (5.5, 3.5)   # width, height in inches
+plt.rcParams["figure.dpi"] = 100
+
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table,
+    Image, PageBreak
+)
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from io import BytesIO
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -314,5 +328,139 @@ st.pyplot(pair_fig.fig)
 plt.close("all")
 
 st.success("Dashboard execution completed successfully ✔")
+
+def generate_ids_pdf():
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+
+    # ---- Force Times New Roman in PDF ----
+    styles["Title"].fontName = "Times-Roman"
+    styles["Heading2"].fontName = "Times-Roman"
+    styles["Normal"].fontName = "Times-Roman"
+
+    elements = []
+
+    # -------- TITLE --------
+    elements.append(Paragraph(
+        "<b>Intrusion Detection System – Final Report</b>",
+        styles["Title"]
+    ))
+    elements.append(Spacer(1, 12))
+
+    # -------- PROJECT OVERVIEW --------
+    elements.append(Paragraph("<b>Project Overview</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(
+        "This project implements a Machine Learning–based Intrusion Detection System (IDS) "
+        "to classify network traffic as Normal or Attack using supervised learning models.",
+        styles["Normal"]
+    ))
+    elements.append(Spacer(1, 12))
+
+    # -------- ACCURACY TABLE --------
+    acc_table = Table([
+        ["Model", "Accuracy (%)"],
+        ["Linear SVM", f"{acc_svm*100:.2f}"],
+        ["XGBoost", f"{acc_xgb*100:.2f}"]
+    ])
+    acc_table.setStyle([
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+        ("ALIGN", (0,0), (-1,-1), "CENTER"),
+        ("FONTNAME", (0,0), (-1,0), "Times-Bold")
+    ])
+    elements.append(acc_table)
+    elements.append(PageBreak())
+
+    # -------- HELPER TO ADD PLOTS --------
+    def add_plot(fig, title):
+        elements.append(Paragraph(title, styles["Heading2"]))
+        buf = BytesIO()
+        fig.savefig(buf, format="png", dpi=120, bbox_inches="tight")
+        plt.close(fig)
+        buf.seek(0)
+        elements.append(
+            Image(buf, width=5.2*inch, height=3.3*inch)
+        )
+        elements.append(PageBreak())
+
+    # -------- ADD ALL 11 PLOTS --------
+
+    # 1. Class Distribution
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    sns.countplot(x=y, ax=ax)
+    add_plot(fig, "1. Class Distribution")
+
+    # 2. Accuracy Comparison
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    ax.bar(["SVM","XGBoost"], [acc_svm*100, acc_xgb*100])
+    ax.set_ylabel("Accuracy (%)")
+    add_plot(fig, "2. Accuracy Comparison")
+
+    # 3. Confusion Matrix
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+    add_plot(fig, "3. Confusion Matrix")
+
+    # 4. ROC Curve
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    ax.plot(fpr, tpr)
+    ax.plot([0,1],[0,1],'--')
+    add_plot(fig, "4. ROC Curve")
+
+    # 5. Precision–Recall Curve
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    ax.plot(recall, precision)
+    add_plot(fig, "5. Precision–Recall Curve")
+
+    # 6. Prediction Confidence
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    ax.hist(y_prob, bins=20)
+    add_plot(fig, "6. Prediction Confidence")
+
+    # 7. Error Breakdown
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    ax.bar(["TN","FP","FN","TP"], cm.flatten())
+    add_plot(fig, "7. Error Breakdown")
+
+    # 8. Feature Importance
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    sns.barplot(data=imp_df.head(6), x="Importance", y="Feature", ax=ax)
+    add_plot(fig, "8. Feature Importance")
+
+    # 9. Feature vs Class
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    sns.boxplot(x=y, y=df[top_feat], ax=ax)
+    add_plot(fig, "9. Feature vs Class")
+
+    # 10. Scatter Plot
+    fig, ax = plt.subplots(figsize=(5.5,3.5))
+    sns.scatterplot(x=df[f1], y=df[f2], hue=y, ax=ax)
+    add_plot(fig, "10. Scatter Plot")
+
+    # 11. Pair Plot
+    pair_fig = sns.pairplot(df[[f1,f2,target]].sample(300), hue=target)
+    buf = BytesIO()
+    pair_fig.fig.savefig(buf, format="png", dpi=120)
+    plt.close("all")
+    buf.seek(0)
+    elements.append(Paragraph("11. Pair Plot", styles["Heading2"]))
+    elements.append(Image(buf, width=5.2*inch, height=5.2*inch))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+st.markdown("## 📄 Download Full IDS Report")
+
+st.download_button(
+    label="Download Complete IDS Report (PDF)",
+    data=generate_ids_pdf(),
+    file_name="IDS_Final_Report.pdf",
+    mime="application/pdf"
+)
+
+
+
 
 
